@@ -15,7 +15,10 @@ public class Application {
                 = new AnnotationConfigApplicationContext(AppConfig.class);
         BookService service = context.getBean(BookService.class);
 
-        service.save(new Book("Master"));
+        Book book = new Book();
+        book.setTitle("Master");
+
+        service.save(book);
         service.findAll();
     }
 }
