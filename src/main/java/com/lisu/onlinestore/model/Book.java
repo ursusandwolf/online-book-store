@@ -15,4 +15,8 @@ public class Book {
     private Long id;
     @Nonnull
     private String title;
+
+    public Book(String title) {
+        this.title = title;
+    }
 }
