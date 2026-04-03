@@ -2,11 +2,11 @@ package com.lisu.onlinestore.dao.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
 import com.lisu.onlinestore.model.Book;
-import com.lisu.onlinestore.util.HibernateUtil;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -39,12 +39,14 @@ public class BookRepositoryImpl implements BookRepository {
                 session.close();
             }
         }
-
         return book;
     }
 
     @Override
     public List<Book> findAll() {
-        return List.of();
+        try (Session session = sessionFactory.openSession()) {
+            Query<Book> fromBook = session.createQuery("from Book", Book.class);
+            return fromBook.getResultList();
+        }
     }
 }
