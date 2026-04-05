@@ -2,9 +2,7 @@ package com.lisu.onlinestore;
 
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.service.BookService;
-import com.lisu.onlinestore.service.impl.BookServiceImpl;
 import java.math.BigDecimal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,8 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-    @Autowired
-    private final BookService bookService = new BookServiceImpl();
+    private final BookService bookService;
+
+    public Application(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
