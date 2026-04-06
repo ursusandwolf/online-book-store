@@ -1,6 +1,7 @@
 package com.lisu.onlinestore.dao.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
+import com.lisu.onlinestore.dao.DataProcessingException;
 import com.lisu.onlinestore.model.Book;
 import java.util.List;
 import org.hibernate.Session;
@@ -32,7 +33,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can' t save book to DB");
+            throw new DataProcessingException("Can't save book: " + book, e);
 
         } finally {
             if (session != null) {
@@ -47,6 +48,8 @@ public class BookRepositoryImpl implements BookRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Book> fromBook = session.createQuery("from Book", Book.class);
             return fromBook.getResultList();
+        } catch (Exception e) {
+            throw new DataProcessingException("Cant read from books",  e);
         }
     }
 }
