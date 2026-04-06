@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,30 +38,4 @@ public class Book {
     private String description;
 
     private String coverImage;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Book book)) {
-            return false;
-        }
-        return isbn != null && isbn.equals(book.isbn);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(isbn);
-    }
-
-    @Override
-    public String toString() {
-        return "Book{"
-                + "id=" + id
-                + ", title='" + title + '\''
-                + ", author='" + author + '\''
-                + ", isbn='" + isbn + '\''
-                + ", price=" + price + '}';
-    }
 }
