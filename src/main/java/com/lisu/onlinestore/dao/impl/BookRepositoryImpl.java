@@ -49,7 +49,7 @@ public class BookRepositoryImpl implements BookRepository {
             Query<Book> fromBook = session.createQuery("from Book", Book.class);
             return fromBook.getResultList();
         } catch (Exception e) {
-            throw new DataProcessingException("Cant read from books",  e);
+            throw new DataProcessingException("Cant read from books", e);
         }
     }
 }
