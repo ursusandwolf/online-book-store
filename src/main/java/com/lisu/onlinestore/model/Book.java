@@ -5,17 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(
         name = "books",
         uniqueConstraints = @UniqueConstraint(name = "uk_books_isbn", columnNames = "isbn")
@@ -25,78 +24,21 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @Column(nullable = false)
     private String title;
 
-    @NotBlank
     @Column(nullable = false)
     private String author;
 
-    @NotBlank
     @Column(nullable = false, unique = true, length = 32)
     private String isbn;
 
-    @NotNull
-    @DecimalMin(value = "0.00", inclusive = true)
-    @Digits(integer = 10, fraction = 2)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
-    @Lob
-    @Column(columnDefinition = "text")
     private String description;
 
-    @Column(name = "cover_image")
     private String coverImage;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCoverImage() {
-        return coverImage;
-    }
-
-    public void setCoverImage(String coverImage) {
-        this.coverImage = coverImage;
-    }
 
     @Override
     public boolean equals(Object o) {

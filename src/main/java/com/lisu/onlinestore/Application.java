@@ -1,8 +1,9 @@
 package com.lisu.onlinestore;
 
-import java.math.BigDecimal;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.service.BookService;
+import java.math.BigDecimal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application implements CommandLineRunner {
 
     private final BookService bookService;
-
-    public Application(BookService bookService) {
-        this.bookService = bookService;
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
