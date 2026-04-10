@@ -90,6 +90,9 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <excludes>
+                        <exclude>**/generated-sources/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
