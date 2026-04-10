@@ -79,7 +79,7 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <phase>verify</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -87,12 +87,10 @@
                 </executions>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <excludes>
-                        **/generated-sources/**
-                    </excludes>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <sourceDirectories>src/main</sourceDirectories>
                 </configuration>
             </plugin>
         </plugins>

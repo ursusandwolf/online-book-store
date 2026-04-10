@@ -4,7 +4,6 @@ import com.lisu.onlinestore.dto.BookRequestDto;
 import com.lisu.onlinestore.service.BookService;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
