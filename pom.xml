@@ -91,7 +91,7 @@
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
                     <excludes>
-                        <exclude>**/generated-sources/**</exclude>
+                        **/generated-sources/**,**/target/**
                     </excludes>
                 </configuration>
             </plugin>

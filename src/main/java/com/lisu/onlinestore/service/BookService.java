@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface BookService {
 
-        BookDto save(Book book);
+    BookDto save(Book book);
 
-        BookDto update(Long id, BookRequestDto dto);
+    BookDto update(Long id, BookRequestDto dto);
 
-        BookDto findById(Long id);
+    BookDto findById(Long id);
 
-        List<BookDto> findAll();
+    List<BookDto> findAll();
 
-        void delete(Long id);
+    void delete(Long id);
 }

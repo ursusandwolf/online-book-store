@@ -1,7 +1,7 @@
 package com.lisu.onlinestore.dao;
 
-import java.util.List;
 import com.lisu.onlinestore.model.Book;
+import java.util.List;
 
 public interface BookRepository {
     Book save(Book book);
