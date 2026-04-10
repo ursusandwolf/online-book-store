@@ -2,6 +2,7 @@ package com.lisu.onlinestore.dao.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
 import com.lisu.onlinestore.dao.DataProcessingException;
+import com.lisu.onlinestore.dao.EntityNotFoundException;
 import com.lisu.onlinestore.model.Book;
 import java.util.List;
 import org.hibernate.Session;
@@ -48,7 +49,7 @@ public class BookRepositoryImpl implements BookRepository {
         try (Session session = sessionFactory.openSession()) {
             return session.get(Book.class, id);
         } catch (Exception e) {
-            throw new DataProcessingException("Can't find book by id: " + id, e);
+            throw new EntityNotFoundException("Can't find book by id: " + id, e);
         }
     }
 
