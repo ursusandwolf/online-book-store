@@ -46,8 +46,4 @@ public class BookServiceImpl implements BookService {
         return result;
     }
 
-    @Override
-    public void delete(Long id) {
-        //not implemented yet
-    }
 }
