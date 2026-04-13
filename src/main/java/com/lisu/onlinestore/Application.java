@@ -1,6 +1,6 @@
 package com.lisu.onlinestore;
 
-import com.lisu.onlinestore.dto.BookRequestDto;
+import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import com.lisu.onlinestore.service.BookService;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class Application {
     }
 
     public void run(String... args) throws Exception {
-        BookRequestDto book1 = new BookRequestDto();
+        CreateBookRequestDto book1 = new CreateBookRequestDto();
         book1.setTitle("Clean Code");
         book1.setAuthor("Robert C. Martin");
         book1.setIsbn("9780132350884");
@@ -27,7 +27,7 @@ public class Application {
         book1.setCoverImage("https://example.com/covers/clean-code.jpg");
         bookService.create(book1);
 
-        BookRequestDto book2 = new BookRequestDto();
+        CreateBookRequestDto book2 = new CreateBookRequestDto();
         book2.setTitle("The Mythical Man-Month");
         book2.setAuthor("Frederick P. Brooks Jr.");
         book2.setIsbn("0201835959");

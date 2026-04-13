@@ -2,7 +2,7 @@ package com.lisu.onlinestore.service.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
 import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.BookRequestDto;
+import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import com.lisu.onlinestore.mapper.BookMapper;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.service.BookService;
@@ -19,13 +19,13 @@ public class BookServiceImpl implements BookService {
     private final BookMapper mapper;
 
     @Override
-    public BookDto create(BookRequestDto dto) {
+    public BookDto create(CreateBookRequestDto dto) {
         Book book = mapper.toEntity(dto);
         return mapper.toDto(repository.save(book));
     }
 
     @Override
-    public BookDto update(Long id, BookRequestDto dto) {
+    public BookDto update(Long id, CreateBookRequestDto dto) {
         Book existing = repository.findById(id);
         mapper.updateEntityFromDto(dto, existing);
         Book saved = repository.save(existing);

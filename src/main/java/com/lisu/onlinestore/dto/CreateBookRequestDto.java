@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookRequestDto {
+public class CreateBookRequestDto {
 
     private String title;
 

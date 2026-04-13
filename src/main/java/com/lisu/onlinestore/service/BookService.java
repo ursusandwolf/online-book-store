@@ -1,12 +1,12 @@
 package com.lisu.onlinestore.service;
 
 import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.BookRequestDto;
+import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
 
-    BookDto create(BookRequestDto dto);
+    BookDto create(CreateBookRequestDto dto);
 
     BookDto findById(Long id);
 

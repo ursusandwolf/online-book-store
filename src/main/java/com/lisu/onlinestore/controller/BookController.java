@@ -1,7 +1,7 @@
 package com.lisu.onlinestore.controller;
 
 import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.BookRequestDto;
+import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import com.lisu.onlinestore.service.BookService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -68,7 +68,7 @@ public class BookController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDto createBook(@Valid @RequestBody BookRequestDto bookDto) {
+    public BookDto createBook(@Valid @RequestBody CreateBookRequestDto bookDto) {
         return service.create(bookDto);
     }
 }
