@@ -1,8 +1,8 @@
 package com.lisu.onlinestore.dao.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
-import com.lisu.onlinestore.dao.DataProcessingException;
-import com.lisu.onlinestore.dao.EntityNotFoundException;
+import com.lisu.onlinestore.exception.DataProcessingException;
+import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.model.Book;
 import java.util.List;
 import org.hibernate.Session;
