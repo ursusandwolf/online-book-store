@@ -7,7 +7,6 @@ import com.lisu.onlinestore.mapper.BookMapper;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.service.BookService;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +32,6 @@ public class BookServiceImpl implements BookService {
     public List<BookDto> findAll() {
         return repository.findAll().stream()
                 .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
