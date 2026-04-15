@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Response DTO class
- */
 @Getter
 @Setter
 @NoArgsConstructor

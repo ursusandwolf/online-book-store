@@ -6,12 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Request DTO class
- *
- * <p>Represents incoming data for creating or updating a book.
- * Validation is intentionally omitted as it is out of scope of this task.</p>
- */
 @Getter
 @Setter
 @NoArgsConstructor
