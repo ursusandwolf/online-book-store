@@ -1,12 +1,7 @@
 package com.lisu.onlinestore.dao;
 
 import com.lisu.onlinestore.model.Book;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BookRepository {
-    Book save(Book book);
-
-    Book findById(Long id);
-
-    List<Book> findAll();
+public interface BookRepository extends JpaRepository<Book, Long> {
 }
