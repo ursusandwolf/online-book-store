@@ -26,6 +26,7 @@ public class CreateBookRequestDto {
     @Pattern(regexp = "^(97[89])?\\d{9}[\\dXx]$", message = "Invalid ISBN format")
     private String isbn;
 
+    @NotNull
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
 
