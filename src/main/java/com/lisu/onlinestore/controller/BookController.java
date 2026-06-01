@@ -4,8 +4,11 @@ import com.lisu.onlinestore.dto.BookDto;
 import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import com.lisu.onlinestore.service.BookService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +28,10 @@ public class BookController {
     private final BookService service;
 
     @GetMapping
-    public List<BookDto> getAll() {
-        return service.findAll();
+    public Page<BookDto> getAll(
+            @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC)
+            Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
