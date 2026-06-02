@@ -3,6 +3,8 @@ package com.lisu.onlinestore.controller;
 import com.lisu.onlinestore.dto.BookDto;
 import com.lisu.onlinestore.dto.CreateBookRequestDto;
 import com.lisu.onlinestore.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,11 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
+@Tag(name = "Book management", description = "Endpoints for managing books")
 public class BookController {
 
     private final BookService service;
 
     @GetMapping
+    @Operation(summary = "Get all books", description = "Get a list of all available books")
     public Page<BookDto> getAll(
             @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC)
             Pageable pageable) {
