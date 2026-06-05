@@ -1,10 +1,8 @@
 package com.lisu.onlinestore.dto.user;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class UserResponseDto {
     private Long id;
     private String email;
