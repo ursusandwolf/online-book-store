@@ -1,7 +1,7 @@
 package com.lisu.onlinestore.security;
 
-import jakarta.servlet.HttpFilter;
 /*
+import jakarta.servlet.HttpFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-public class BasicAuthenticationFilter extends HttpFilter {
+public class BasicAuthenticationFilter { // Removed extends HttpFilter for now
     /* 
     // Filter commented out for the current HW as per requirements, 
     // but kept for future security tasks.
