@@ -11,14 +11,24 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-public class HelloFilter extends HttpFilter {
+public class BasicAuthenticationFilter extends HttpFilter {
+    /* 
+    // Filter commented out for the current HW as per requirements, 
+    // but kept for future security tasks.
     @Override
     protected void doFilter(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        //super.doFilter(request, response, chain);
-        log.info("Message from the hello filter");
+        String url = request.getRequestURI();
+        if (PublicAvaliableEndpoints.getPublicEndpoints().contains(url)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        String header = request.getHeader("Authorization");
+
+        chain.doFilter(request, response);
     }
+    */
 }
