@@ -1,7 +1,5 @@
 package com.lisu.onlinestore.security;
 
-import java.util.List;
-
 public class PublicAvaliableEndpoints {
     /*
     protected static List<String> publicEndpoints = List.of(
