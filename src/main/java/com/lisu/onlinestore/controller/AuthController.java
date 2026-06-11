@@ -1,9 +1,7 @@
 package com.lisu.onlinestore.controller;
 
-import com.lisu.onlinestore.dto.user.UserLoginRequestDto;
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
 import com.lisu.onlinestore.dto.user.UserResponseDto;
-import com.lisu.onlinestore.exception.RegistrationException;
 import com.lisu.onlinestore.security.AuthenticationService;
 import com.lisu.onlinestore.service.UserService;
 import jakarta.validation.Valid;
@@ -21,8 +19,7 @@ public class AuthController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public UserResponseDto registerUser(@RequestBody @Valid UserRegistrationRequestDto requestDto)
-    {
+    public UserResponseDto registerUser(@RequestBody @Valid UserRegistrationRequestDto requestDto) {
         return userService.register(requestDto);
     }
 }
