@@ -20,15 +20,9 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/registration")
+    @PostMapping("/register")
     public UserResponseDto registerUser(@RequestBody @Valid UserRegistrationRequestDto requestDto)
-            throws RegistrationException {
+    {
         return userService.register(requestDto);
-    }
-
-    @PostMapping("/login")
-    public boolean login(@RequestBody @Valid UserLoginRequestDto requestDto)
-            throws RegistrationException {
-        return authenticationService.authenticate(requestDto);
     }
 }
