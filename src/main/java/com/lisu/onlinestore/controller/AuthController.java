@@ -2,7 +2,6 @@ package com.lisu.onlinestore.controller;
 
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
 import com.lisu.onlinestore.dto.user.UserResponseDto;
-import com.lisu.onlinestore.security.AuthenticationService;
 import com.lisu.onlinestore.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,6 +34,4 @@ public class AuthController {
             @RequestBody @Valid UserRegistrationRequestDto requestDto) {
         return userService.register(requestDto);
     }
-}
-
 }

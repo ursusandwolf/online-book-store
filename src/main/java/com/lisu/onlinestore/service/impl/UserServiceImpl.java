@@ -24,8 +24,6 @@ public class UserServiceImpl implements UserService {
                     + requestDto.getEmail());
         }
         User user = userMapper.toUser(requestDto);
-        user.setFirstName("Test");
-        user.setLastName("User");
         User saved = userRepository.save(user);
         return userMapper.toUserResponse(saved);
     }
