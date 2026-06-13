@@ -2,7 +2,8 @@ package com.lisu.onlinestore.service;
 
 import com.lisu.onlinestore.dto.BookDto;
 import com.lisu.onlinestore.dto.CreateBookRequestDto;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
@@ -10,7 +11,7 @@ public interface BookService {
 
     BookDto findById(Long id);
 
-    List<BookDto> findAll();
+    Page<BookDto> findAll(Pageable pageable);
 
     BookDto update(Long id, CreateBookRequestDto dto);
 

@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class Application {
-
     private final BookService bookService;
 
     public static void main(String[] args) {
