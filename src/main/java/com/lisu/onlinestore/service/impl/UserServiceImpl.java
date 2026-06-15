@@ -1,6 +1,5 @@
 package com.lisu.onlinestore.service.impl;
 
-import java.util.Set;
 import com.lisu.onlinestore.dao.RoleRepository;
 import com.lisu.onlinestore.dao.UserRepository;
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
@@ -11,6 +10,7 @@ import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.service.UserService;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
