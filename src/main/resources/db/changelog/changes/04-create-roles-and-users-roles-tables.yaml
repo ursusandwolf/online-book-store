@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: create-roles-table
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: roles
       changes:
         - createTable:
             tableName: roles
@@ -23,6 +28,11 @@ databaseChangeLog:
   - changeSet:
       id: create-user-roles-table
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_roles
       changes:
         - createTable:
             tableName: user_roles
@@ -55,6 +65,11 @@ databaseChangeLog:
   - changeSet:
       id: insert-roles
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM roles WHERE name IN ('USER', 'ADMIN')"
       changes:
         - insert:
             tableName: roles
@@ -65,6 +80,11 @@ databaseChangeLog:
   - changeSet:
       id: insert-admin-user
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM users WHERE email = 'admin@example.com'"
       changes:
         - insert:
             tableName: users
@@ -77,6 +97,11 @@ databaseChangeLog:
   - changeSet:
       id: assign-admin-role
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM user_roles WHERE user_id = (SELECT id FROM users WHERE email = 'admin@example.com') AND role_id = (SELECT id FROM roles WHERE name = 'ADMIN')"
       changes:
         - insert:
             tableName: user_roles
