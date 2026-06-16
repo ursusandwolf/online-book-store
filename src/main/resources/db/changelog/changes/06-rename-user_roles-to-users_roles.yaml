@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-user_roles-to-users_roles
+      author: alex
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: user_roles
+            constraintName: user_roles_user_fk
+        - dropForeignKeyConstraint:
+            baseTableName: user_roles
+            constraintName: user_roles_role_fk
+        - renameTable:
+            oldTableName: user_roles
+            newTableName: users_roles
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: users_roles_user_fk
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: users_roles_role_fk

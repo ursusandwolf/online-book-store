@@ -5,6 +5,7 @@
 ### Changed
 - Improved error message in `UserServiceImpl` to include `RoleName.USER` when default role is not found.
 - Implemented soft delete for `User` entity, adding `is_deleted` column to `users` table via Liquibase.
+- Renamed `user_roles` table to `users_roles` for naming consistency.
 
 ## [Unreleased] - 2026-06-14
 

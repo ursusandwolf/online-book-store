@@ -19,4 +19,5 @@ The project has successfully implemented a robust Security module based on Sprin
 ## Pending Items
 - **Testing**: While the core logic is implemented and verified manually, adding automated integration tests for all Use Cases is recommended for the next phase.
 - **JWT Implementation**: The current setup uses Basic Auth. Transitioning to JWT would be a logical next step for a production-ready API.
+- **Naming Conventions**: Adopted plural naming for join tables (e.g., `users_roles` instead of `user_roles`) for consistency with base tables.
 - **Soft Delete**: Implemented `is_deleted` logic for both `Book` and `User` entities using Hibernate `@SQLDelete` and `@Where` annotations.
