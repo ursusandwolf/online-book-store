@@ -35,7 +35,7 @@ databaseChangeLog:
               tableName: user_roles
       changes:
         - createTable:
-            tableName: user_roles
+            tableName: users_roles
             columns:
               - column:
                   name: user_id
