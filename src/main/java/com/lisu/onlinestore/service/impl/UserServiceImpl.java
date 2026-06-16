@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
                     + requestDto.getEmail());
         }
         Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new RegistrationException("Can't find default role"));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find default role"));
 
         User user = userMapper.toUser(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
