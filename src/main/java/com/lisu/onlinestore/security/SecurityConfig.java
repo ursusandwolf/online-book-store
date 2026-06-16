@@ -1,4 +1,4 @@
-package com.lisu.onlinestore.security;
+package com.lisu.onlinestore.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
