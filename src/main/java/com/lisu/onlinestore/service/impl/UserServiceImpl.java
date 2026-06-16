@@ -4,12 +4,14 @@ import com.lisu.onlinestore.dao.RoleRepository;
 import com.lisu.onlinestore.dao.UserRepository;
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
 import com.lisu.onlinestore.dto.user.UserResponseDto;
+import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.exception.RegistrationException;
 import com.lisu.onlinestore.mapper.UserMapper;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.service.UserService;
+import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +34,8 @@ public class UserServiceImpl implements UserService {
                     + requestDto.getEmail());
         }
         Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new EntityNotFoundException("Can't find default role"));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find default role: "
+                        + RoleName.USER));
 
         User user = userMapper.toUser(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
