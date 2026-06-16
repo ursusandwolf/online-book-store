@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
