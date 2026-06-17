@@ -11,11 +11,11 @@ import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.service.UserService;
-import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
