@@ -13,9 +13,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final JwtUtil tokenUtil;
 
     public UserLoginResponseDto authenticate(@Valid UserLoginRequestDto request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
-        return user.isPresent() && user.get().getPassword().equals(request.getPassword());
+        if (user.isEmpty()) {
+            throw new RuntimeException("Can't login");
+        }
+        String userPasswordFromDb = user.get().getPassword();
+        String hashedPassword = HashUtil.hashPassword(request.getPassword(), user.get().getSalt());
+        if (!hashedPassword.equals(userPasswordFromDb)) {
+            throw new RuntimeException("Can't login");
+        }
+        return tokenUtil.generateToken(request.getEmail());
     }
 }
