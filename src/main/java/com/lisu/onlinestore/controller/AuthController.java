@@ -1,7 +1,10 @@
 package com.lisu.onlinestore.controller;
 
+import com.lisu.onlinestore.dto.user.UserLoginRequestDto;
+import com.lisu.onlinestore.dto.user.UserLoginResponseDto;
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
 import com.lisu.onlinestore.dto.user.UserResponseDto;
+import com.lisu.onlinestore.security.AuthenticationService;
 import com.lisu.onlinestore.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
         description = "Endpoints for user registration and authentication")
 public class AuthController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,5 +37,12 @@ public class AuthController {
     public UserResponseDto registerUser(
             @RequestBody @Valid UserRegistrationRequestDto requestDto) {
         return userService.register(requestDto);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public UserLoginResponseDto login(
+            @RequestBody @Valid UserLoginRequestDto request) {
+        return authenticationService.authenticate(request);
     }
 }
