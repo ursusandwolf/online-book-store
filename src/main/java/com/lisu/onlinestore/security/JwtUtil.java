@@ -1,5 +1,6 @@
 package com.lisu.onlinestore.security;
 
+import com.lisu.onlinestore.dto.user.UserLoginResponseDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-    private final SecretKey secret; // використовуємо SecretKey, а не Key
+    private final SecretKey secret;
 
     @Value("${jwt.expiration}")
     private long expiration;
@@ -23,23 +24,25 @@ public class JwtUtil {
         secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .subject(username) // subjet, а не setSubject
-                .issuedAt(new Date(System.currentTimeMillis())) // issuedAt, а не setIssuedAt
-                .expiration(new Date(System.currentTimeMillis() + expiration))  // expiration, а не setExpiration
+    public UserLoginResponseDto generateToken(String username) {
+        return new UserLoginResponseDto(
+                Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secret)
-                .compact();
+                .compact()
+        );
     }
 
     public boolean isValidToken(String token) {
         try {
             Jws<Claims> claimsJws = Jwts.parser()
-                    .verifyWith(secret) // verifyWith, а не setSigningKey
+                    .verifyWith(secret)
                     .build()
-                    .parseSignedClaims(token); // parseSignedClaims, а не parseClaimsJws
+                    .parseSignedClaims(token);
 
-            return !claimsJws.getPayload().getExpiration().before(new Date()); // getPayload(), а не getBody()
+            return !claimsJws.getPayload().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException("Expired or invalid JWT token");
         }

@@ -7,6 +7,7 @@ import com.lisu.onlinestore.model.User;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,15 +15,18 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final JwtUtil tokenUtil;
+    private final PasswordEncoder passwordEncoder;
 
     public UserLoginResponseDto authenticate(@Valid UserLoginRequestDto request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user.isEmpty()) {
             throw new RuntimeException("Can't login");
         }
+        String rawPassword = request.getPassword();
         String userPasswordFromDb = user.get().getPassword();
-        String hashedPassword = HashUtil.hashPassword(request.getPassword(), user.get().getSalt());
-        if (!hashedPassword.equals(userPasswordFromDb)) {
+
+        if (!passwordEncoder.matches(rawPassword,
+                userPasswordFromDb)) {
             throw new RuntimeException("Can't login");
         }
         return tokenUtil.generateToken(request.getEmail());

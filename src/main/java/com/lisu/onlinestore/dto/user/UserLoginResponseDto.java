@@ -1,4 +1,4 @@
 package com.lisu.onlinestore.dto.user;
 
-public class UserLoginResponseDto {
+public record UserLoginResponseDto(String token) {
 }
