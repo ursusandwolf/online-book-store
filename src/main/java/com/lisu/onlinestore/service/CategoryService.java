@@ -1,11 +1,17 @@
 package com.lisu.onlinestore.service;
 
+import com.lisu.onlinestore.dto.category.CategoryDto;
 import com.lisu.onlinestore.dto.category.CategoryResponseDto;
-import com.lisu.onlinestore.model.Category;
 import java.util.List;
 
 public interface CategoryService {
+    CategoryResponseDto getById(Long id);
+
     List<CategoryResponseDto> findAll();
 
-    Category save(Category category);
+    CategoryResponseDto save(CategoryDto categoryDto);
+
+    void deleteById(Long id);
+
+    CategoryResponseDto update(Long id, CategoryDto categoryDto);
 }
