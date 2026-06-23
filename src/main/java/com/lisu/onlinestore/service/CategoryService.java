@@ -1,6 +1,6 @@
 package com.lisu.onlinestore.service;
 
-import com.lisu.onlinestore.dto.CategoryResponseDto;
+import com.lisu.onlinestore.dto.category.CategoryResponseDto;
 import com.lisu.onlinestore.model.Category;
 import java.util.List;
 

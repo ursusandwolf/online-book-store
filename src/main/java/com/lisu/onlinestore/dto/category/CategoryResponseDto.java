@@ -1,4 +1,4 @@
-package com.lisu.onlinestore.dto;
+package com.lisu.onlinestore.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

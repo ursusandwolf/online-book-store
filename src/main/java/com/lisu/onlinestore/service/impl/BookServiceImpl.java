@@ -1,8 +1,9 @@
 package com.lisu.onlinestore.service.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
-import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.CreateBookRequestDto;
+import com.lisu.onlinestore.dto.book.BookDto;
+import com.lisu.onlinestore.dto.book.BookDtoWithoutCategoryIds;
+import com.lisu.onlinestore.dto.book.CreateBookRequestDto;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.BookMapper;
 import com.lisu.onlinestore.model.Book;
@@ -42,8 +43,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookDto> findAllByCategoriesId(Long id, Pageable pageable) {
-        return repository.findAllByCategoriesId(id, pageable).map(mapper::toDto);
+    public Page<BookDtoWithoutCategoryIds> findAllByCategoriesId(Long id, Pageable pageable) {
+        return repository.findAllByCategoriesId(id, pageable)
+                .map(mapper::toDtoWithoutCategories);
     }
 
     @Override
