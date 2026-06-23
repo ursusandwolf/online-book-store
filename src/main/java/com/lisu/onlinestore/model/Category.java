@@ -22,7 +22,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE categories SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
+@Where(clause = "is_deleted = false") // @SQLRestriction for Hibernate 6+
 @Table(name = "categories")
 public class Category {
     @Id

@@ -42,6 +42,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Page<BookDto> findAllByCategoriesId(Long id, Pageable pageable) {
+        return repository.findAllByCategoriesId(id, pageable).map(mapper::toDto);
+    }
+
+    @Override
     public BookDto update(Long id, CreateBookRequestDto dto) {
         Book book = repository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find book by id: " + id)

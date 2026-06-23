@@ -13,6 +13,8 @@ public interface BookService {
 
     Page<BookDto> findAll(Pageable pageable);
 
+    Page<BookDto> findAllByCategoriesId(Long categoryId, Pageable pageable);
+
     BookDto update(Long id, CreateBookRequestDto dto);
 
     void deleteById(Long id);
