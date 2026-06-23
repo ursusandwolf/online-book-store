@@ -59,7 +59,7 @@ public class Book {
             name = "book_category",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    @ToString.Exclude
+    @ToString.Exclude // protection of StackOverflowError & LazyInitializationException
     @EqualsAndHashCode.Exclude
     private Set<Category> categories = new HashSet<>();
 }

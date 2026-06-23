@@ -11,3 +11,5 @@ databaseChangeLog:
       file: db/changelog/changes/05-add-is-deleted-column-to-users-table.yaml
   - include:
       file: db/changelog/changes/06-rename-user_roles-to-users_roles.yaml
+  - include:
+      file: db/changelog/changes/07-add-categories-and-book-category-table.yaml
