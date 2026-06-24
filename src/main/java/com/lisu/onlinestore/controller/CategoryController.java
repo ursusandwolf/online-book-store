@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
 @Tag(name = "Category", description = "Operations with book categories")
 public class CategoryController {
     private final CategoryService categoryService;
