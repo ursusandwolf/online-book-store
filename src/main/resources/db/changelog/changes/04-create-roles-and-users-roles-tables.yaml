@@ -32,7 +32,7 @@ databaseChangeLog:
         - onFail: MARK_RAN
           not:
             tableExists:
-              tableName: user_roles
+              tableName: users_roles
       changes:
         - createTable:
             tableName: users_roles
@@ -50,17 +50,17 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: user_roles
+            baseTableName: users_roles
             baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: id
-            constraintName: user_roles_user_fk
+            constraintName: users_roles_user_fk
         - addForeignKeyConstraint:
-            baseTableName: user_roles
+            baseTableName: users_roles
             baseColumnNames: role_id
             referencedTableName: roles
             referencedColumnNames: id
-            constraintName: user_roles_role_fk
+            constraintName: users_roles_role_fk
 
   - changeSet:
       id: insert-roles
@@ -101,10 +101,10 @@ databaseChangeLog:
         - onFail: MARK_RAN
           sqlCheck:
             expectedResult: 0
-            sql: "SELECT COUNT(*) FROM user_roles WHERE user_id = (SELECT id FROM users WHERE email = 'admin@example.com') AND role_id = (SELECT id FROM roles WHERE name = 'ADMIN')"
+            sql: "SELECT COUNT(*) FROM users_roles WHERE user_id = (SELECT id FROM users WHERE email = 'admin@example.com') AND role_id = (SELECT id FROM roles WHERE name = 'ADMIN')"
       changes:
         - insert:
-            tableName: user_roles
+            tableName: users_roles
             columns:
               - column:
                   name: user_id

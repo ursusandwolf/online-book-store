@@ -1,8 +1,8 @@
 package com.lisu.onlinestore.service.impl;
 
 import com.lisu.onlinestore.dao.CategoryRepository;
-import com.lisu.onlinestore.dto.category.CategoryDto;
 import com.lisu.onlinestore.dto.category.CategoryResponseDto;
+import com.lisu.onlinestore.dto.category.CreateCategoryDto;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.CategoryMapper;
 import com.lisu.onlinestore.model.Category;
@@ -38,24 +38,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteById(Long id) {
-        // soft delete in entity
         categoryRepository.deleteById(id);
     }
 
     @Override
-    public CategoryResponseDto save(CategoryDto categoryDto) {
-        // DTO -> entity -> save -> response DTO
-        Category category = categoryMapper.toEntity(categoryDto);
+    public CategoryResponseDto save(CreateCategoryDto createCategoryDto) {
+        Category category = categoryMapper.toEntity(createCategoryDto);
         return categoryMapper.toResponseDto(categoryRepository.save(category));
     }
 
     @Override
-    public CategoryResponseDto update(Long id, CategoryDto categoryDto) {
-        //name and description renew
+    public CategoryResponseDto update(Long id, CreateCategoryDto createDto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find category by id: " + id));
-        category.setName(categoryDto.getName());
-        category.setDescription(categoryDto.getDescription());
+        categoryMapper.updateFromDto(createDto, category);
         return categoryMapper.toResponseDto(categoryRepository.save(category));
     }
 }

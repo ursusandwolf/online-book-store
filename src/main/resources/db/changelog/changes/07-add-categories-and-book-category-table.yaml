@@ -19,6 +19,7 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: description
                   type: varchar(255)
@@ -31,7 +32,7 @@ databaseChangeLog:
 
         # 2. Table for composite PK
         - createTable:
-            tableName: book_category
+            tableName: books_categories
             columns:
               - column:
                   name: book_id
@@ -47,14 +48,14 @@ databaseChangeLog:
                     primaryKey: true # And another
         # 3. Add Foreign Keys
         - addForeignKeyConstraint:
-            baseTableName: book_category
+            baseTableName: books_categories
             baseColumnNames: book_id
             referencedTableName: books
             referencedColumnNames: id
             constraintName: fk_book_category_book_id
 
         - addForeignKeyConstraint:
-            baseTableName: book_category
+            baseTableName: books_categories
             baseColumnNames: category_id
             referencedTableName: categories
             referencedColumnNames: id

@@ -25,7 +25,6 @@ public class CreateBookRequestDto {
     @NotBlank(message = "Author cannot be blank")
     private String author;
 
-    // Pattern validates ISBN-10 or ISBN-13 format
     @NotBlank(message = "ISBN cannot be blank")
     @Pattern(regexp = "^(97[89])?\\d{9}[\\dXx]$", message = "Invalid ISBN format")
     private String isbn;

@@ -1,7 +1,7 @@
 package com.lisu.onlinestore.service;
 
-import com.lisu.onlinestore.dto.category.CategoryDto;
 import com.lisu.onlinestore.dto.category.CategoryResponseDto;
+import com.lisu.onlinestore.dto.category.CreateCategoryDto;
 import java.util.List;
 
 public interface CategoryService {
@@ -11,7 +11,7 @@ public interface CategoryService {
 
     void deleteById(Long id);
 
-    CategoryResponseDto save(CategoryDto categoryDto);
+    CategoryResponseDto save(CreateCategoryDto createCategoryDto);
 
-    CategoryResponseDto update(Long id, CategoryDto categoryDto);
+    CategoryResponseDto update(Long id, CreateCategoryDto createCategoryDto);
 }

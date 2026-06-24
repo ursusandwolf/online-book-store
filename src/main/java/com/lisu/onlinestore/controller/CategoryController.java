@@ -1,8 +1,8 @@
 package com.lisu.onlinestore.controller;
 
 import com.lisu.onlinestore.dto.book.BookDtoWithoutCategoryIds;
-import com.lisu.onlinestore.dto.category.CategoryDto;
 import com.lisu.onlinestore.dto.category.CategoryResponseDto;
+import com.lisu.onlinestore.dto.category.CreateCategoryDto;
 import com.lisu.onlinestore.service.BookService;
 import com.lisu.onlinestore.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,6 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final BookService bookService;
 
-    // USER endpoints -----------------------------------------------------
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Get all categories", description = "Returns all available categories")
@@ -59,13 +58,12 @@ public class CategoryController {
         return bookService.findAllByCategoriesId(id, pageable);
     }
 
-    // ADMIN endpoints -----------------------------------------------------
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Create a new category", description = "Creates a new category")
     @ApiResponse(responseCode = "200", description = "Category created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid category data")
-    public CategoryResponseDto create(@RequestBody @Valid CategoryDto dto) {
+    public CategoryResponseDto create(@RequestBody @Valid CreateCategoryDto dto) {
         return categoryService.save(dto);
     }
 
@@ -76,7 +74,7 @@ public class CategoryController {
     @ApiResponse(responseCode = "400", description = "Invalid category data")
     @ApiResponse(responseCode = "404", description = "Category not found")
     public CategoryResponseDto update(
-            @PathVariable Long id, @RequestBody @Valid CategoryDto dto) {
+            @PathVariable Long id, @RequestBody @Valid CreateCategoryDto dto) {
         return categoryService.update(id, dto);
     }
 
