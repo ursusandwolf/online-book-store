@@ -7,12 +7,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
-    // For converting entity to response DTO
     CategoryResponseDto toResponseDto(Category category);
-    
-    // For converting request DTO to entity
+
     Category toEntity(CategoryDto categoryDto);
-    
-    // (Optional) Convert entity to simpler DTO if needed
+
     CategoryDto toDto(Category category);
 }

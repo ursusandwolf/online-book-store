@@ -22,19 +22,24 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
+    public List<CategoryResponseDto> findAll() {
+        log.info("Trying to get all categories.");
+        return categoryRepository.findAll().stream()
+                .map(categoryMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
     public CategoryResponseDto getById(Long id) {
-        // ищем категорию и кидаем ошибку, если не нашли
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find category by id: " + id));
         return categoryMapper.toResponseDto(category);
     }
 
     @Override
-    public List<CategoryResponseDto> findAll() {
-        log.info("Trying to get all categories.");
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toResponseDto)
-                .toList();
+    public void deleteById(Long id) {
+        // soft delete in entity
+        categoryRepository.deleteById(id);
     }
 
     @Override
@@ -45,18 +50,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        // soft delete уже настроен в entity
-        categoryRepository.deleteById(id);
-    }
-
-    @Override
     public CategoryResponseDto update(Long id, CategoryDto categoryDto) {
-        // обновляем только нужные поля
+        //name and description renew
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find category by id: " + id));
-        category.setName(categoryDto.name());
-        category.setDescription(categoryDto.description());
+        category.setName(categoryDto.getName());
+        category.setDescription(categoryDto.getDescription());
         return categoryMapper.toResponseDto(categoryRepository.save(category));
     }
 }

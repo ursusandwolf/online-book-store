@@ -5,13 +5,13 @@ import com.lisu.onlinestore.dto.category.CategoryResponseDto;
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponseDto getById(Long id);
-
     List<CategoryResponseDto> findAll();
 
-    CategoryResponseDto save(CategoryDto categoryDto);
+    CategoryResponseDto getById(Long id);
 
     void deleteById(Long id);
+
+    CategoryResponseDto save(CategoryDto categoryDto);
 
     CategoryResponseDto update(Long id, CategoryDto categoryDto);
 }

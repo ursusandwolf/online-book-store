@@ -17,7 +17,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface BookMapper {
-    Book toBook(CreateBookRequestDto createBookRequestDto);
+    Book toEntity(CreateBookRequestDto createBookRequestDto);
 
     BookDto toDto(Book book);
 
@@ -25,11 +25,26 @@ public interface BookMapper {
 
     @AfterMapping
     default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {
+        // entity -> dto: Set<Category> -> Set<Long>
         if (book.getCategories() != null) {
             bookDto.setCategoryIds(
                     book.getCategories().stream()
                             .map(Category::getId)
                             .collect(Collectors.toSet()));
+        }
+    }
+
+    @AfterMapping
+    default void setCategories(@MappingTarget Book book, CreateBookRequestDto bookDto) {
+        // dto -> entity: Set<Long> -> Set<Category>
+        if (bookDto.getCategoryIds() != null) {
+            book.setCategories(bookDto.getCategoryIds().stream()
+                    .map(categoryId -> {
+                        Category category = new Category();
+                        category.setId(categoryId);
+                        return category;
+                    })
+                    .collect(Collectors.toSet()));
         }
     }
 }

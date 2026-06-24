@@ -6,6 +6,7 @@ import com.lisu.onlinestore.dto.category.CategoryResponseDto;
 import com.lisu.onlinestore.service.BookService;
 import com.lisu.onlinestore.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -32,18 +33,28 @@ public class CategoryController {
 
     // USER endpoints -----------------------------------------------------
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Get all categories", description = "Returns all available categories")
+    @ApiResponse(responseCode = "200", description = "Categories retrieved successfully")
     public List<CategoryResponseDto> getAllCategories() {
         return categoryService.findAll();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a single category")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Get a single category", description = "Returns a category by its ID")
+    @ApiResponse(responseCode = "200", description = "Category retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Category not found")
     public CategoryResponseDto getById(@PathVariable Long id) {
         return categoryService.getById(id);
     }
 
     @GetMapping("/{id}/books")
-    @Operation(summary = "Get books of a category")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Get books of a category",
+            description = "Returns paginated books for a category")
+    @ApiResponse(responseCode = "200", description = "Books retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Category not found")
     public Page<BookDtoWithoutCategoryIds> getBooks(@PathVariable Long id, Pageable pageable) {
         return bookService.findAllByCategoriesId(id, pageable);
     }
@@ -51,14 +62,19 @@ public class CategoryController {
     // ADMIN endpoints -----------------------------------------------------
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    @Operation(summary = "Create a new category")
+    @Operation(summary = "Create a new category", description = "Creates a new category")
+    @ApiResponse(responseCode = "200", description = "Category created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid category data")
     public CategoryResponseDto create(@RequestBody @Valid CategoryDto dto) {
         return categoryService.save(dto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    @Operation(summary = "Update a category")
+    @Operation(summary = "Update a category", description = "Updates an existing category")
+    @ApiResponse(responseCode = "200", description = "Category updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid category data")
+    @ApiResponse(responseCode = "404", description = "Category not found")
     public CategoryResponseDto update(
             @PathVariable Long id, @RequestBody @Valid CategoryDto dto) {
         return categoryService.update(id, dto);
@@ -66,7 +82,9 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a category")
+    @Operation(summary = "Delete a category", description = "Deletes a category by its ID")
+    @ApiResponse(responseCode = "204", description = "Category deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Category not found")
     public void delete(@PathVariable Long id) {
         categoryService.deleteById(id);
     }
