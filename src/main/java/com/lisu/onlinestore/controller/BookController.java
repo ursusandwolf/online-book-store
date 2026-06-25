@@ -1,7 +1,7 @@
 package com.lisu.onlinestore.controller;
 
-import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.CreateBookRequestDto;
+import com.lisu.onlinestore.dto.book.BookDto;
+import com.lisu.onlinestore.dto.book.CreateBookRequestDto;
 import com.lisu.onlinestore.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

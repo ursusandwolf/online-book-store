@@ -1,8 +1,9 @@
 package com.lisu.onlinestore.service.impl;
 
 import com.lisu.onlinestore.dao.BookRepository;
-import com.lisu.onlinestore.dto.BookDto;
-import com.lisu.onlinestore.dto.CreateBookRequestDto;
+import com.lisu.onlinestore.dto.book.BookDto;
+import com.lisu.onlinestore.dto.book.BookDtoWithoutCategoryIds;
+import com.lisu.onlinestore.dto.book.CreateBookRequestDto;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.BookMapper;
 import com.lisu.onlinestore.model.Book;
@@ -23,7 +24,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto create(CreateBookRequestDto dto) {
-        Book book = mapper.toBook(dto);
+        Book book = mapper.toEntity(dto);
         return mapper.toDto(repository.save(book));
     }
 
@@ -42,16 +43,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Page<BookDtoWithoutCategoryIds> findAllByCategoriesId(Long id, Pageable pageable) {
+        return repository.findAllByCategoriesId(id, pageable)
+                .map(mapper::toDtoWithoutCategories);
+    }
+
+    @Override
     public BookDto update(Long id, CreateBookRequestDto dto) {
         Book book = repository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find book by id: " + id)
         );
-        book.setTitle(dto.getTitle());
-        book.setAuthor(dto.getAuthor());
-        book.setIsbn(dto.getIsbn());
-        book.setPrice(dto.getPrice());
-        book.setDescription(dto.getDescription());
-        book.setCoverImage(dto.getCoverImage());
+        mapper.updateFromDto(dto, book);
         return mapper.toDto(repository.save(book));
     }
 

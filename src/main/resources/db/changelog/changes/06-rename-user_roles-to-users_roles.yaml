@@ -2,6 +2,10 @@ databaseChangeLog:
   - changeSet:
       id: rename-user_roles-to-users_roles
       author: alex
+      preConditions:
+        - onFail: MARK_RAN
+          tableExists:
+            tableName: user_roles
       changes:
         - dropForeignKeyConstraint:
             baseTableName: user_roles

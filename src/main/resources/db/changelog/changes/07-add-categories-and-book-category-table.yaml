@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-categories-and-book-category-table
+      author: alex
+      changes:
+        # 1. Create the table of categories
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+        # 2. Table for composite PK
+        - createTable:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    primaryKey: true # One key
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    primaryKey: true # And another
+        # 3. Add Foreign Keys
+        - addForeignKeyConstraint:
+            baseTableName: books_categories
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_book_category_book_id
+
+        - addForeignKeyConstraint:
+            baseTableName: books_categories
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_book_category_category_id
