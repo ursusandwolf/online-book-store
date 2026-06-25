@@ -1,12 +1,15 @@
 package com.lisu.onlinestore.dao;
 
-import com.lisu.onlinestore.model.Book;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.lisu.onlinestore.model.User;
+import com.lisu.onlinestore.model.cart.ShoppingCart;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long> {
 
-    Page<Book> findAllByCategoriesId(Long categoryId, Pageable pageable);
+    Optional<ShoppingCart> findByUser(User user);
 
+    @EntityGraph(attributePaths = "items")
+    Optional<ShoppingCart> findWithItemsByUser(User user);
 }

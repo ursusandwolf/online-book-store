@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,18 +19,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 @Table(
         name = "books",
         uniqueConstraints = @UniqueConstraint(name = "uk_books_isbn", columnNames = "isbn")
 )
 public class Book {
+
+    @Version
+    @Column(nullable = false)
+    private int version;
+
+    @Column(nullable = false)
+    private Integer stock = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
