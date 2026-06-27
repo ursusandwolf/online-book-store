@@ -31,13 +31,6 @@ import org.hibernate.annotations.SQLRestriction;
         uniqueConstraints = @UniqueConstraint(name = "uk_books_isbn", columnNames = "isbn")
 )
 public class Book {
-
-    @Version
-    @Column(nullable = false)
-    private int version;
-
-    @Column(nullable = false)
-    private Integer stock = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,6 +50,13 @@ public class Book {
     private String description;
 
     private String coverImage;
+
+    @Column(nullable = false)
+    private Integer stock = 0;
+
+    @Version
+    @Column(nullable = false)
+    private int version;
 
     @Column(nullable = false)
     private boolean isDeleted = false;

@@ -49,7 +49,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         requestValidator.validateAddRequest(request);
         User user = getUserById(userId);
         ShoppingCart cart = getOrCreateCart(user);
-        Book book = getAndValidateBook(request.getBookId(), request.getQuantity());
+        Book book = getBookById(request.getBookId());
         bookStockService.decreaseStock(book, request.getQuantity());
 
         CartItem item = itemRepo.findByShoppingCartAndBook(cart, book)
@@ -81,7 +81,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         int diff = newQty - currentQty;
 
         if (diff > 0) {
-            bookStockService.validateStockAvailable(book, diff);
             bookStockService.decreaseStock(book, diff);
         } else if (diff < 0) {
             bookStockService.increaseStock(book, -diff);
@@ -126,10 +125,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
     }
 
-    private Book getAndValidateBook(Long bookId, int quantity) {
-        Book book = bookRepo.findById(bookId)
+    private Book getBookById(Long bookId) {
+        return bookRepo.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found: " + bookId));
-        bookStockService.validateStockAvailable(book, quantity);
-        return book;
     }
 }
