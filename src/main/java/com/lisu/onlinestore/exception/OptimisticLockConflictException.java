@@ -1,7 +1,0 @@
-package com.lisu.onlinestore.exception;
-
-public class OptimisticLockConflictException extends RuntimeException {
-    public OptimisticLockConflictException(String message) {
-        super(message);
-    }
-}

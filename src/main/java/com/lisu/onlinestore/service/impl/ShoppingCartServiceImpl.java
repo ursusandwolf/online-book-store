@@ -14,7 +14,6 @@ import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.model.cart.CartItem;
 import com.lisu.onlinestore.model.cart.ShoppingCart;
-import com.lisu.onlinestore.service.BookStockService;
 import com.lisu.onlinestore.service.CartRequestValidator;
 import com.lisu.onlinestore.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final BookRepository bookRepo;
     private final UserRepository userRepo;
     private final ShoppingCartMapper cartMapper;
-    private final BookStockService bookStockService;
     private final CartRequestValidator requestValidator;
 
     @Override
@@ -48,9 +46,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public CartItemDto addBook(Long userId, AddCartItemRequest request) {
         requestValidator.validateAddRequest(request);
         User user = getUserById(userId);
-        ShoppingCart cart = getOrCreateCart(user);
+        ShoppingCart cart = getCartByUser(user);
         Book book = getBookById(request.getBookId());
-        bookStockService.decreaseStock(book, request.getQuantity());
 
         CartItem item = itemRepo.findByShoppingCartAndBook(cart, book)
                 .map(existingItem -> {
@@ -75,16 +72,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                                       UpdateQuantityRequest request) {
         requestValidator.validateUpdateRequest(request);
         CartItem item = getItemByIdAndUser(userId, cartItemId);
-        Book book = item.getBook();
         int currentQty = item.getQuantity();
         int newQty = request.getQuantity();
-        int diff = newQty - currentQty;
-
-        if (diff > 0) {
-            bookStockService.decreaseStock(book, diff);
-        } else if (diff < 0) {
-            bookStockService.increaseStock(book, -diff);
-        }
 
         item.setQuantity(newQty);
         CartItem updatedItem = itemRepo.save(item);
@@ -95,18 +84,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void removeItem(Long userId, Long cartItemId) {
         CartItem item = getItemByIdAndUser(userId, cartItemId);
-        Book book = item.getBook();
-        bookStockService.increaseStock(book, item.getQuantity());
         itemRepo.delete(item);
     }
 
-    @Transactional
-    public ShoppingCart getOrCreateCart(User user) {
-        return cartRepo.findWithItemsByUser(user).orElseGet(() -> {
-            ShoppingCart cart = new ShoppingCart();
-            cart.setUser(user);
-            return cartRepo.save(cart);
-        });
+    private ShoppingCart getCartByUser(User user) {
+        return cartRepo.findWithItemsByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Shopping cart not found for user: " + user.getId()));
     }
 
     private CartItem getItemByIdAndUser(Long userId, Long cartItemId) {

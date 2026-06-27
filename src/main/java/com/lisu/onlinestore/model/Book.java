@@ -10,7 +10,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,13 +49,6 @@ public class Book {
     private String description;
 
     private String coverImage;
-
-    @Column(nullable = false)
-    private Integer stock = 0;
-
-    @Version
-    @Column(nullable = false)
-    private int version;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
