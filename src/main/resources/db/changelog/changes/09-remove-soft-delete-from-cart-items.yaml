@@ -3,11 +3,11 @@ databaseChangeLog:
       id: remove-soft-delete-from-cart-items
       author: codex
       preConditions:
-        onFail: MARK_RAN
-        onError: MARK_RAN
         - columnExists:
             tableName: cart_items
             columnName: is_deleted
+      onFail: MARK_RAN
+      onError: MARK_RAN
       changes:
         - dropColumn:
             tableName: cart_items

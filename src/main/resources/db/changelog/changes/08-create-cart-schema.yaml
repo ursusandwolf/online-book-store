@@ -67,9 +67,11 @@ databaseChangeLog:
             indexName: idx_cart_item_cart
             tableName: cart_items
             columns:
-              - column: shopping_cart_id
+              - column:
+                  name: shopping_cart_id
         - createIndex:
             indexName: idx_cart_item_book
             tableName: cart_items
             columns:
-              - column: book_id
+              - column:
+                  name: book_id
