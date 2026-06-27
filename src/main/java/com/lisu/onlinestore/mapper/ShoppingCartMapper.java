@@ -23,7 +23,7 @@ public interface ShoppingCartMapper {
             cartDto.setUserId(shoppingCart.getUser().getId());
         }
         if (shoppingCart.getItems() != null) {
-            cartDto.setItems(shoppingCart.getItems().stream()
+            cartDto.setCartItems(shoppingCart.getItems().stream()
                     .map(this::toItemDto)
                     .collect(Collectors.toList()));
         }

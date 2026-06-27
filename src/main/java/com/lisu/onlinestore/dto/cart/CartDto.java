@@ -13,5 +13,5 @@ import lombok.Setter;
 public class CartDto {
     private Long id;
     private Long userId;
-    private List<CartItemDto> items;
+    private List<CartItemDto> cartItems;
 }

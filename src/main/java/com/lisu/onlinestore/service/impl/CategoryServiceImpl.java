@@ -7,9 +7,10 @@ import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.CategoryMapper;
 import com.lisu.onlinestore.model.Category;
 import com.lisu.onlinestore.service.CategoryService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +23,10 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryResponseDto> findAll() {
+    public Page<CategoryResponseDto> findAll(Pageable pageable) {
         log.info("Trying to get all categories.");
-        return categoryRepository.findAll().stream()
-                .map(categoryMapper::toResponseDto)
-                .toList();
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toResponseDto);
     }
 
     @Override
