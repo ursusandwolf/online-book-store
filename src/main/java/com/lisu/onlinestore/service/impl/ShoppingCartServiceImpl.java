@@ -15,7 +15,6 @@ import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.model.cart.CartItem;
 import com.lisu.onlinestore.model.cart.ShoppingCart;
-import com.lisu.onlinestore.service.CartRequestValidator;
 import com.lisu.onlinestore.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final UserRepository userRepo;
     private final ShoppingCartMapper cartMapper;
     private final CartItemMapper cartItemMapper;
-    private final CartRequestValidator requestValidator;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,7 +44,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public CartItemDto addBook(Long userId, AddCartItemRequest request) {
-        requestValidator.validateAddRequest(request);
         User user = getUserById(userId);
         ShoppingCart cart = getCartByUser(user);
         Book book = getBookById(request.getBookId());
@@ -72,9 +69,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public CartItemDto updateQuantity(Long userId, Long cartItemId,
                                       UpdateQuantityRequest request) {
-        requestValidator.validateUpdateRequest(request);
         CartItem item = getItemByIdAndUser(userId, cartItemId);
-        int currentQty = item.getQuantity();
         int newQty = request.getQuantity();
 
         item.setQuantity(newQty);
