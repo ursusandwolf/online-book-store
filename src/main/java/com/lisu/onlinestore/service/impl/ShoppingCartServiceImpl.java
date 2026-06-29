@@ -9,6 +9,7 @@ import com.lisu.onlinestore.dto.cart.CartItemDto;
 import com.lisu.onlinestore.dto.cart.request.AddCartItemRequest;
 import com.lisu.onlinestore.dto.cart.request.UpdateQuantityRequest;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
+import com.lisu.onlinestore.mapper.CartItemMapper;
 import com.lisu.onlinestore.mapper.ShoppingCartMapper;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.User;
@@ -29,6 +30,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final BookRepository bookRepo;
     private final UserRepository userRepo;
     private final ShoppingCartMapper cartMapper;
+    private final CartItemMapper cartItemMapper;
     private final CartRequestValidator requestValidator;
 
     @Override
@@ -63,7 +65,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return itemRepo.save(newItem);
                 });
 
-        return cartMapper.toItemDto(item);
+        return cartItemMapper.toDto(item);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         item.setQuantity(newQty);
         CartItem updatedItem = itemRepo.save(item);
-        return cartMapper.toItemDto(updatedItem);
+        return cartItemMapper.toDto(updatedItem);
     }
 
     @Override
