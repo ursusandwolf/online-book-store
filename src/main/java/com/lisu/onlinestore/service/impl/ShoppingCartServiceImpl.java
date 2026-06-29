@@ -32,6 +32,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemMapper cartItemMapper;
 
     @Override
+    @Transactional
+    public void createCartForUser(User user) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(user);
+        cartRepo.save(shoppingCart);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public CartDto getCart(Long userId) {
         return cartMapper.toDto(getCartByUserId(userId));

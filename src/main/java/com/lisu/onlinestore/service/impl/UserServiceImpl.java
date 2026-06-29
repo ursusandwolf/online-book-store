@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.service.impl;
 
 import com.lisu.onlinestore.dao.RoleRepository;
-import com.lisu.onlinestore.dao.ShoppingCartRepository;
 import com.lisu.onlinestore.dao.UserRepository;
 import com.lisu.onlinestore.dto.user.UserRegistrationRequestDto;
 import com.lisu.onlinestore.dto.user.UserResponseDto;
@@ -11,7 +10,7 @@ import com.lisu.onlinestore.mapper.UserMapper;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
-import com.lisu.onlinestore.model.cart.ShoppingCart;
+import com.lisu.onlinestore.service.ShoppingCartService;
 import com.lisu.onlinestore.service.UserService;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final ShoppingCartRepository shoppingCartRepository;
+    private final ShoppingCartService shoppingCartService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -45,9 +44,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(userRole));
 
         User saved = userRepository.save(user);
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUser(saved);
-        shoppingCartRepository.save(shoppingCart);
+        shoppingCartService.createCartForUser(saved);
         return userMapper.toUserResponse(saved);
     }
 }
