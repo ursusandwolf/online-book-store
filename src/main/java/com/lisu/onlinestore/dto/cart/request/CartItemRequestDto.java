@@ -11,7 +11,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateQuantityRequest {
+public class CartItemRequestDto {
+    @NotNull(message = "Book ID cannot be null")
+    private Long bookId;
+
     @NotNull(message = "Quantity cannot be null")
     @Positive(message = "Quantity must be greater than 0")
     private Integer quantity;
