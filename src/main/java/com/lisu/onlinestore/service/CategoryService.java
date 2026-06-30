@@ -2,10 +2,11 @@ package com.lisu.onlinestore.service;
 
 import com.lisu.onlinestore.dto.category.CategoryResponseDto;
 import com.lisu.onlinestore.dto.category.CreateCategoryDto;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<CategoryResponseDto> findAll();
+    Page<CategoryResponseDto> findAll(Pageable pageable);
 
     CategoryResponseDto getById(Long id);
 

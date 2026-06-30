@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove-soft-delete-from-cart-items
+      author: codex
+      preConditions:
+        - columnExists:
+            tableName: cart_items
+            columnName: is_deleted
+      onFail: MARK_RAN
+      onError: MARK_RAN
+      changes:
+        - dropColumn:
+            tableName: cart_items
+            columnName: is_deleted

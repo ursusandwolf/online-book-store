@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-shopping-carts-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: shopping_carts
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_shopping_cart_user
+                    references: users(id)
+                    deleteCascade: false
+  - changeSet:
+      id: create-cart-items-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: cart_items
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: shopping_cart_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cart_item_shopping_cart
+                    references: shopping_carts(id)
+                    deleteCascade: true
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cart_item_book
+                    references: books(id)
+                    deleteCascade: false
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_cart_item_cart
+            tableName: cart_items
+            columns:
+              - column:
+                  name: shopping_cart_id
+        - createIndex:
+            indexName: idx_cart_item_book
+            tableName: cart_items
+            columns:
+              - column:
+                  name: book_id

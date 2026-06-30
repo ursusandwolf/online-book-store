@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: align-shopping-cart-with-mapsid
+      author: codex
+      preConditions:
+        - columnExists:
+            tableName: shopping_carts
+            columnName: user_id
+      onFail: MARK_RAN
+      onError: HALT
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: cart_items
+            constraintName: fk_cart_item_shopping_cart
+
+        - dropForeignKeyConstraint:
+            baseTableName: shopping_carts
+            constraintName: fk_shopping_cart_user
+
+        - sql:
+            sql: |
+              UPDATE cart_items ci
+              JOIN shopping_carts sc ON ci.shopping_cart_id = sc.id
+              SET ci.shopping_cart_id = sc.user_id
+
+        - sql:
+            sql: |
+              UPDATE shopping_carts
+              SET id = user_id
+
+        - dropColumn:
+            tableName: shopping_carts
+            columnName: user_id
+
+        - sql:
+            sql: |
+              ALTER TABLE shopping_carts
+              MODIFY COLUMN id BIGINT NOT NULL
+
+        - addForeignKeyConstraint:
+            baseTableName: shopping_carts
+            baseColumnNames: id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_shopping_cart_id_user
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: cart_items
+            baseColumnNames: shopping_cart_id
+            referencedTableName: shopping_carts
+            referencedColumnNames: id
+            constraintName: fk_cart_item_shopping_cart
+            onDelete: CASCADE

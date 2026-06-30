@@ -10,6 +10,7 @@ import com.lisu.onlinestore.mapper.UserMapper;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
+import com.lisu.onlinestore.service.ShoppingCartService;
 import com.lisu.onlinestore.service.UserService;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final ShoppingCartService shoppingCartService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(userRole));
 
         User saved = userRepository.save(user);
+        shoppingCartService.createCartForUser(saved);
         return userMapper.toUserResponse(saved);
     }
 }
