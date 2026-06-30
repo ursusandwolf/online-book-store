@@ -11,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,14 +32,11 @@ public class ShoppingCart {
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
-    /*
-        public Optional<CartItem> findItemByBookId(Long bookId) {
-            return cartItems.stream()
-                    .filter(item -> item.getBook() != null && item.getBook().getId().equals(bookId))
-                    .findFirst();
-
-        }
-    */
+    public Optional<CartItem> findItemByBookId(Long bookId) {
+        return cartItems.stream()
+                .filter(item -> item.getBook() != null && item.getBook().getId().equals(bookId))
+                .findFirst();
+    }
 
     public CartItem addItem(CartItem cartItem) {
         cartItem.setShoppingCart(this);

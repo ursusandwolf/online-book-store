@@ -52,10 +52,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = getCartByUserId(userId);
         Book book = getBookById(request.getBookId());
 
-        CartItem item = cart.getCartItems().stream()
-                .filter(cartItem -> cartItem.getBook() != null
-                        && cartItem.getBook().getId().equals(book.getId()))
-                .findFirst()
+        CartItem item = cart.findItemByBookId(book.getId())
                 .map(existingItem -> {
                     existingItem.setQuantity(existingItem.getQuantity() + request.getQuantity());
                     return existingItem;
