@@ -15,11 +15,7 @@ import org.mapstruct.ReportingPolicy;
 public interface CartItemMapper {
     CartItemDto toDto(CartItem cartItem);
 
-    @AfterMapping
-    default void setBookDetails(@MappingTarget CartItemDto cartItemDto, CartItem cartItem) {
-        if (cartItem.getBook() != null) {
-            cartItemDto.setBookId(cartItem.getBook().getId());
-            cartItemDto.setBookTitle(cartItem.getBook().getTitle());
-        }
-    }
+    @Mapping(source = "book.id", target = "bookId")
+    @Mapping(source = "book.title", target = "bookTitle")
+    CartItemDto toDto(CartItem cartItem);
 }
