@@ -51,13 +51,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = getCartByUserId(userId);
         Book book = getBookById(request.getBookId());
 
-        CartItem item = cart.findItemByBookId(book.getId())
-                .map(existingItem -> {
-                    existingItem.setQuantity(existingItem.getQuantity()
-                            + request.getQuantity());
-                    return existingItem;
-                })
-                .orElseGet(() -> cart.addItem(book, request.getQuantity()));
+        cart.getCartItems().stream()
+                .filter(item -> item.getBook().getId().equals(itemDto.bookId()))
+                .findFirst()
+                .ifPresentOrElse(item -> item.setQuantity(item.getQuantity() + itemDto.quantity()),
+                        () -> addCartItemToCart(itemDto, book, cart));
 
         cartRepo.save(cart);
 
@@ -79,6 +77,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void removeItem(Long userId, Long cartItemId) {
         itemRepo.delete(getItemByIdAndUserId(userId, cartItemId));
+    }
+
+    private void addCartItemToCart(CartItemRequestDto itemDto, Book book, ShoppingCart cart) {
+        CartItem cartItem = itemMapper.toCartItem(itemDto);
+        cartItem.setBook(book);
+        cart.addItemToCart(cartItem);
     }
 
     private ShoppingCart getCartByUser(User user) {

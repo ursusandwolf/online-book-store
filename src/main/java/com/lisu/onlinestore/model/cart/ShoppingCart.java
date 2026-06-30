@@ -31,25 +31,24 @@ public class ShoppingCart {
     private User user;
 
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> items = new HashSet<>();
+    private Set<CartItem> cartItems = new HashSet<>();
 
-    public Optional<CartItem> findItemByBookId(Long bookId) {
-        return items.stream()
-                .filter(item -> item.getBook() != null && item.getBook().getId().equals(bookId))
-                .findFirst();
+    /*
+        public Optional<CartItem> findItemByBookId(Long bookId) {
+            return cartItems.stream()
+                    .filter(item -> item.getBook() != null && item.getBook().getId().equals(bookId))
+                    .findFirst();
+
+        }
+    */
+
+    public CartItem addItem(CartItem cartItem) {
+        cartItem.setShoppingCart(this);
+        cartItems.add(cartItem);
+        return cartItem;
     }
 
-    public CartItem addItem(Book book, int quantity) {
-        CartItem item = new CartItem();
-        item.setBook(book);
-        item.setQuantity(quantity);
-        item.setShoppingCart(this);
-        items.add(item);
-        return item;
-    }
-
-    public void removeItem(CartItem item) {
-        items.remove(item);
-        item.setShoppingCart(null);
+    public void clearCart() {
+        cartItems.clear();
     }
 }

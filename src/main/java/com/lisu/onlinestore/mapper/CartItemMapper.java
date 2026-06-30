@@ -1,10 +1,10 @@
 package com.lisu.onlinestore.mapper;
 
 import com.lisu.onlinestore.dto.cart.CartItemDto;
+import com.lisu.onlinestore.dto.cart.request.CartItemRequestDto;
 import com.lisu.onlinestore.model.cart.CartItem;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
@@ -13,7 +13,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CartItemMapper {
-    CartItemDto toDto(CartItem cartItem);
+    CartItem toCartItem(CartItemRequestDto cartItemDto);
 
     @Mapping(source = "book.id", target = "bookId")
     @Mapping(source = "book.title", target = "bookTitle")
