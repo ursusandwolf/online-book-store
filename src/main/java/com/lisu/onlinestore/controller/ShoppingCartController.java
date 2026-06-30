@@ -2,8 +2,8 @@ package com.lisu.onlinestore.controller;
 
 import com.lisu.onlinestore.dto.cart.CartDto;
 import com.lisu.onlinestore.dto.cart.CartItemDto;
-import com.lisu.onlinestore.dto.cart.request.AddCartItemRequest;
-import com.lisu.onlinestore.dto.cart.request.UpdateQuantityRequest;
+import com.lisu.onlinestore.dto.cart.request.CartItemRequestDto;
+import com.lisu.onlinestore.dto.cart.request.UpdateQuantityRequestDto;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +47,7 @@ public class ShoppingCartController {
     @ApiResponse(responseCode = "404", description = "Book or shopping cart not found")
     public CartItemDto addBook(
             @AuthenticationPrincipal User user,
-            @RequestBody @Valid AddCartItemRequest request) {
+            @RequestBody @Valid CartItemRequestDto request) {
         return shoppingCartService.addBook(user.getId(), request);
     }
 
@@ -59,7 +59,7 @@ public class ShoppingCartController {
     public CartItemDto updateQuantity(
             @AuthenticationPrincipal User user,
             @PathVariable Long cartItemId,
-            @RequestBody @Valid UpdateQuantityRequest request) {
+            @RequestBody @Valid UpdateQuantityRequestDto request) {
         return shoppingCartService.updateQuantity(user.getId(), cartItemId, request);
     }
 

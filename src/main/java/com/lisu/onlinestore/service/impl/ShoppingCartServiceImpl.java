@@ -6,8 +6,8 @@ import com.lisu.onlinestore.dao.ShoppingCartRepository;
 import com.lisu.onlinestore.dao.UserRepository;
 import com.lisu.onlinestore.dto.cart.CartDto;
 import com.lisu.onlinestore.dto.cart.CartItemDto;
-import com.lisu.onlinestore.dto.cart.request.AddCartItemRequest;
-import com.lisu.onlinestore.dto.cart.request.UpdateQuantityRequest;
+import com.lisu.onlinestore.dto.cart.request.CartItemRequestDto;
+import com.lisu.onlinestore.dto.cart.request.UpdateQuantityRequestDto;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.CartItemMapper;
 import com.lisu.onlinestore.mapper.ShoppingCartMapper;
@@ -28,8 +28,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemRepository itemRepo;
     private final BookRepository bookRepo;
     private final UserRepository userRepo;
+
     private final ShoppingCartMapper cartMapper;
-    private final CartItemMapper cartItemMapper;
+    private final CartItemMapper itemMapper;
 
     @Override
     @Transactional
@@ -47,30 +48,34 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     @Transactional
-    public CartItemDto addBook(Long userId, AddCartItemRequest request) {
+    public CartItemDto addBook(Long userId, CartItemRequestDto request) {
         ShoppingCart cart = getCartByUserId(userId);
         Book book = getBookById(request.getBookId());
 
         cart.getCartItems().stream()
-                .filter(item -> item.getBook().getId().equals(itemDto.bookId()))
+                .filter(item -> item.getBook()
+                        .getId()
+                        .equals(itemDto.bookId()))
                 .findFirst()
-                .ifPresentOrElse(item -> item.setQuantity(item.getQuantity() + itemDto.quantity()),
+                .ifPresentOrElse(item ->
+                                item.setQuantity(item.getQuantity()
+                                        + itemDto.quantity()),
                         () -> addCartItemToCart(itemDto, book, cart));
 
         cartRepo.save(cart);
 
-        return cartItemMapper.toDto(item);
+        return itemMapper.toDto(item);
     }
 
     @Override
     @Transactional
     public CartItemDto updateQuantity(Long userId, Long cartItemId,
-                                      UpdateQuantityRequest request) {
+                                      UpdateQuantityRequestDto request) {
         CartItem item = getItemByIdAndUserId(userId, cartItemId);
 
         item.setQuantity(request.getQuantity());
         CartItem updatedItem = itemRepo.save(item);
-        return cartItemMapper.toDto(updatedItem);
+        return itemMapper.toDto(updatedItem);
     }
 
     @Override

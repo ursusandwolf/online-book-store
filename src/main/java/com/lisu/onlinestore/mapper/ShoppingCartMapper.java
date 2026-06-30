@@ -1,6 +1,6 @@
 package com.lisu.onlinestore.mapper;
 
-import com.lisu.onlinestore.dto.cart.ShoppingCartDto;
+import com.lisu.onlinestore.dto.cart.CartDto;
 import com.lisu.onlinestore.model.cart.ShoppingCart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,5 +15,5 @@ import org.mapstruct.ReportingPolicy;
 public abstract class ShoppingCartMapper {
 
     @Mapping(source = "user.id", target = "userId")
-    ShoppingCartDto toDto(ShoppingCart shoppingCart);
+    CartDto toDto(ShoppingCart shoppingCart);
 }
