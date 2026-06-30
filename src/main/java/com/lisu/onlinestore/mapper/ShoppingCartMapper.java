@@ -12,7 +12,7 @@ import org.mapstruct.ReportingPolicy;
         uses = CartItemMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public abstract class ShoppingCartMapper {
+public interface ShoppingCartMapper {
 
     @Mapping(source = "user.id", target = "userId")
     CartDto toDto(ShoppingCart shoppingCart);
