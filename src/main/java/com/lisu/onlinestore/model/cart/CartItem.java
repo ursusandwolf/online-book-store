@@ -33,7 +33,4 @@ public class CartItem {
     @Column(nullable = false)
     private int quantity;
 
-    public void setShoppingCart(ShoppingCart shoppingCart) {
-        this.shoppingCart = shoppingCart;
-    }
 }
