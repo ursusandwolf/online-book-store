@@ -19,9 +19,12 @@ databaseChangeLog:
 
         - sql:
             sql: |
-              UPDATE cart_items ci
-              JOIN shopping_carts sc ON ci.shopping_cart_id = sc.id
-              SET ci.shopping_cart_id = sc.user_id
+              UPDATE cart_items
+              SET shopping_cart_id = (
+                SELECT sc.user_id
+                FROM shopping_carts sc
+                WHERE sc.id = cart_items.shopping_cart_id
+              )
 
         - sql:
             sql: |
@@ -33,9 +36,16 @@ databaseChangeLog:
             columnName: user_id
 
         - sql:
+            dbms: mysql
             sql: |
               ALTER TABLE shopping_carts
               MODIFY COLUMN id BIGINT NOT NULL
+
+        - sql:
+            dbms: h2
+            sql: |
+              ALTER TABLE shopping_carts
+              ALTER COLUMN id BIGINT NOT NULL
 
         - addForeignKeyConstraint:
             baseTableName: shopping_carts

@@ -19,3 +19,5 @@ databaseChangeLog:
       file: db/changelog/changes/09-remove-soft-delete-from-cart-items.yaml
   - include:
       file: db/changelog/changes/10-align-shopping-cart-with-mapsid.yaml
+  - include:
+      file: db/changelog/changes/11-create-orders-schema.yaml
