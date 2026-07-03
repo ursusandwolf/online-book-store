@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +31,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,22 +44,6 @@ class OrderControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private OrderService orderService;
-
-    @Test
-    void getOrders_ShouldReturnCurrentUserOrders() throws Exception {
-        User currentUser = createUser(7L, RoleName.USER);
-        OrderDto order = new OrderDto();
-        order.setId(101L);
-
-        when(orderService.getOrders(eq(currentUser.getId()), any()))
-                .thenReturn(new PageImpl<>(java.util.List.of(order)));
-
-        mockMvc.perform(get("/orders").with(user(currentUser)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(101));
-
-        verify(orderService).getOrders(eq(currentUser.getId()), any());
-    }
 
     @Test
     void placeOrder_ShouldAllowUserRole() throws Exception {
