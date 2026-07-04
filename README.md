@@ -6,7 +6,7 @@ Spring Boot REST application for managing books, shopping carts, and orders.
 
 The project uses environment variables for database and JWT configuration.
 
-1. Copy `.env.sample` or `.env.template` to `.env`.
+1. Copy `.env.sample` to `.env`.
 2. Fill in the values in `.env`.
 
 Recommended values:
@@ -18,8 +18,11 @@ MYSQLDB_PASSWORD=bookstore_password
 MYSQLDB_ROOT_PASSWORD=root_password
 JWT_SECRET=hellomateshellomateshellomateshellomates
 JWT_EXPIRATION=300000
-APP_LOCAL_PORT=8080
 MYSQLDB_LOCAL_PORT=3307
+MYSQLDB_DOCKER_PORT=3306
+SPRING_LOCAL_PORT=8080
+SPRING_DOCKER_PORT=8080
+DEBUG_PORT=5005
 ```
 
 `.env` is ignored by git and must not be committed.
@@ -32,7 +35,7 @@ Build and start the application with MySQL:
 docker compose up --build
 ```
 
-The API will be available at `http://localhost:${APP_LOCAL_PORT}` after startup.
+The API will be available at `http://localhost:${SPRING_LOCAL_PORT}` after startup.
 
 ## Run without Docker
 
