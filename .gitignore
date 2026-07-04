@@ -33,3 +33,4 @@ target/*
 postman
 .postman
 docs/*
+.env
