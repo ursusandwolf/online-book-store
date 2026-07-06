@@ -1,9 +1,8 @@
 package com.lisu.onlinestore.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,56 +11,53 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.lisu.onlinestore.dto.book.BookDto;
-import com.lisu.onlinestore.exception.CustomGlobalExceptionHandler;
-import com.lisu.onlinestore.exception.EntityNotFoundException;
+import com.lisu.onlinestore.Application;
+import com.lisu.onlinestore.dao.BookRepository;
+import com.lisu.onlinestore.dao.CategoryRepository;
+import com.lisu.onlinestore.model.Book;
+import com.lisu.onlinestore.model.Category;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
-import com.lisu.onlinestore.service.BookService;
+import com.lisu.onlinestore.support.MySqlIntegrationTest;
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = BookControllerTest.TestApplication.class)
+@SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-class BookControllerTest {
+@Transactional
+class BookControllerTest extends MySqlIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
-    private BookService bookService;
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     void getAll_ShouldAllowUserRole() throws Exception {
-        BookDto book = createBookDto(1L, "Clean Code");
-        when(bookService.findAll(any())).thenReturn(new PageImpl<>(java.util.List.of(book)));
+        Category category = categoryRepository.save(createCategory("Software"));
+        Book book = bookRepository.save(createBook(
+                "Clean Code",
+                "9780132350884",
+                category
+        ));
 
         mockMvc.perform(get("/books").with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].id").value(book.getId()))
                 .andExpect(jsonPath("$.content[0].title").value("Clean Code"));
     }
 
     @Test
-    void getBookById_ShouldReturnNotFoundWhenServiceThrows() throws Exception {
-        when(bookService.findById(99L)).thenThrow(new EntityNotFoundException("Can't find book by id: 99"));
-
+    void getBookById_ShouldReturnNotFoundWhenBookMissing() throws Exception {
         mockMvc.perform(get("/books/99").with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Can't find book by id: 99"));
@@ -69,36 +65,42 @@ class BookControllerTest {
 
     @Test
     void getBookById_ShouldReturnBook() throws Exception {
-        BookDto book = createBookDto(2L, "Effective Java");
-        when(bookService.findById(2L)).thenReturn(book);
+        Category category = categoryRepository.save(createCategory("Java"));
+        Book book = bookRepository.save(createBook(
+                "Effective Java",
+                "9780134685991",
+                category
+        ));
 
-        mockMvc.perform(get("/books/2").with(user(createUser(10L, RoleName.USER))))
+        mockMvc.perform(get("/books/" + book.getId()).with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.id").value(book.getId()))
                 .andExpect(jsonPath("$.title").value("Effective Java"));
     }
 
     @Test
     void createBook_ShouldAllowAdminRole() throws Exception {
-        BookDto createdBook = createBookDto(5L, "Refactoring");
-        when(bookService.create(any())).thenReturn(createdBook);
+        Category category = categoryRepository.save(createCategory("Refactoring"));
 
         mockMvc.perform(post("/books")
                         .with(user(createUser(1L, RoleName.ADMIN)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validBookPayload()))
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(validBookPayload(category.getId())))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(5))
                 .andExpect(jsonPath("$.title").value("Refactoring"));
 
-        verify(bookService).create(any());
+        Optional<Book> savedBook = bookRepository.findAll().stream()
+                .filter(book -> book.getIsbn().equals("9780134757599"))
+                .findFirst();
+        assertTrue(savedBook.isPresent());
+        assertEquals("Refactoring", savedBook.get().getTitle());
     }
 
     @Test
     void createBook_ShouldReturnBadRequestForInvalidPayload() throws Exception {
         mockMvc.perform(post("/books")
                         .with(user(createUser(1L, RoleName.ADMIN)))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "title": "",
@@ -114,18 +116,24 @@ class BookControllerTest {
 
     @Test
     void updateBook_ShouldAllowAdminRole() throws Exception {
-        BookDto updatedBook = createBookDto(7L, "Updated title");
-        when(bookService.update(eq(7L), any())).thenReturn(updatedBook);
+        Category category = categoryRepository.save(createCategory("Legacy"));
+        Book existingBook = bookRepository.save(createBook(
+                "Original title",
+                "9780201633610",
+                category
+        ));
 
-        mockMvc.perform(put("/books/7")
+        mockMvc.perform(put("/books/" + existingBook.getId())
                         .with(user(createUser(1L, RoleName.ADMIN)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validBookPayload()))
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(validBookPayload(category.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(7))
-                .andExpect(jsonPath("$.title").value("Updated title"));
+                .andExpect(jsonPath("$.id").value(existingBook.getId()))
+                .andExpect(jsonPath("$.title").value("Refactoring"));
 
-        verify(bookService).update(eq(7L), any());
+        Book updatedBook = bookRepository.findById(existingBook.getId()).orElseThrow();
+        assertEquals("Refactoring", updatedBook.getTitle());
+        assertEquals("9780134757599", updatedBook.getIsbn());
     }
 
     @Test
@@ -136,18 +144,36 @@ class BookControllerTest {
 
     @Test
     void deleteBook_ShouldAllowAdminRole() throws Exception {
-        mockMvc.perform(delete("/books/5").with(user(createUser(1L, RoleName.ADMIN))))
+        Category category = categoryRepository.save(createCategory("Business"));
+        Book book = bookRepository.save(createBook(
+                "The Lean Startup",
+                "9780307887894",
+                category
+        ));
+
+        mockMvc.perform(delete("/books/" + book.getId()).with(user(createUser(1L, RoleName.ADMIN))))
                 .andExpect(status().isNoContent());
 
-        verify(bookService).deleteById(5L);
+        assertFalse(bookRepository.findById(book.getId()).isPresent());
     }
 
-    private BookDto createBookDto(Long id, String title) {
-        BookDto dto = new BookDto();
-        dto.setId(id);
-        dto.setTitle(title);
-        dto.setAuthor("Author");
-        return dto;
+    private Book createBook(String title, String isbn, Category category) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor("Author");
+        book.setIsbn(isbn);
+        book.setPrice(new BigDecimal("29.99"));
+        book.setDescription("Description");
+        book.setCoverImage("cover.png");
+        book.setCategories(Set.of(category));
+        return book;
+    }
+
+    private Category createCategory(String name) {
+        Category category = new Category();
+        category.setName(name);
+        category.setDescription("Description");
+        return category;
     }
 
     private User createUser(Long id, RoleName roleName) {
@@ -158,13 +184,13 @@ class BookControllerTest {
         user.setId(id);
         user.setEmail(roleName.name().toLowerCase() + "@test.com");
         user.setPassword("password");
-        user.setRoles(java.util.Set.of(role));
+        user.setRoles(Set.of(role));
         user.setFirstName("Test");
         user.setLastName("User");
         return user;
     }
 
-    private String validBookPayload() {
+    private String validBookPayload(Long categoryId) {
         return """
                 {
                   "title": "Refactoring",
@@ -173,30 +199,8 @@ class BookControllerTest {
                   "price": 49.99,
                   "description": "Refactoring book",
                   "coverImage": "cover.png",
-                  "categoryIds": [1]
+                  "categoryIds": [%d]
                 }
-                """;
-    }
-
-    @TestConfiguration
-    @EnableMethodSecurity
-    static class TestSecurityConfig {
-        @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http
-                    .csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                    .build();
-        }
-    }
-
-    @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = {
-            DataSourceAutoConfiguration.class,
-            HibernateJpaAutoConfiguration.class,
-            LiquibaseAutoConfiguration.class
-    })
-    @Import({BookController.class, CustomGlobalExceptionHandler.class, TestSecurityConfig.class})
-    static class TestApplication {
+                """.formatted(categoryId);
     }
 }

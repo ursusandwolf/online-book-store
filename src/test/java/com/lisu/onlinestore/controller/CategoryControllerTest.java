@@ -1,9 +1,8 @@
 package com.lisu.onlinestore.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,61 +11,49 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.lisu.onlinestore.dto.book.BookDtoWithoutCategoryIds;
-import com.lisu.onlinestore.dto.category.CategoryResponseDto;
-import com.lisu.onlinestore.exception.CustomGlobalExceptionHandler;
-import com.lisu.onlinestore.exception.EntityNotFoundException;
+import com.lisu.onlinestore.Application;
+import com.lisu.onlinestore.dao.BookRepository;
+import com.lisu.onlinestore.dao.CategoryRepository;
+import com.lisu.onlinestore.model.Book;
+import com.lisu.onlinestore.model.Category;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
-import com.lisu.onlinestore.service.BookService;
-import com.lisu.onlinestore.service.CategoryService;
+import com.lisu.onlinestore.support.MySqlIntegrationTest;
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = CategoryControllerTest.TestApplication.class)
+@SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-class CategoryControllerTest {
+@Transactional
+class CategoryControllerTest extends MySqlIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
-    private CategoryService categoryService;
-    @MockBean
-    private BookService bookService;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     @Test
     void getAllCategories_ShouldAllowUserRole() throws Exception {
-        CategoryResponseDto category = createCategoryResponseDto(1L, "Fiction");
-        when(categoryService.findAll(any())).thenReturn(new PageImpl<>(java.util.List.of(category)));
+        Category category = categoryRepository.save(createCategory("Fiction"));
 
         mockMvc.perform(get("/categories").with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].id").value(category.getId()))
                 .andExpect(jsonPath("$.content[0].name").value("Fiction"));
     }
 
     @Test
-    void getById_ShouldReturnNotFoundWhenServiceThrows() throws Exception {
-        when(categoryService.getById(55L))
-                .thenThrow(new EntityNotFoundException("Can't find category by id: 55"));
-
+    void getById_ShouldReturnNotFoundWhenCategoryMissing() throws Exception {
         mockMvc.perform(get("/categories/55").with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Can't find category by id: 55"));
@@ -74,48 +61,57 @@ class CategoryControllerTest {
 
     @Test
     void getById_ShouldReturnCategory() throws Exception {
-        CategoryResponseDto category = createCategoryResponseDto(5L, "Science");
-        when(categoryService.getById(5L)).thenReturn(category);
+        Category category = categoryRepository.save(createCategory("Science"));
 
-        mockMvc.perform(get("/categories/5").with(user(createUser(10L, RoleName.USER))))
+        mockMvc.perform(get("/categories/" + category.getId()).with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.id").value(category.getId()))
                 .andExpect(jsonPath("$.name").value("Science"));
     }
 
     @Test
     void getBooks_ShouldReturnBooksForCategory() throws Exception {
-        BookDtoWithoutCategoryIds book = new BookDtoWithoutCategoryIds();
-        book.setId(3L);
-        book.setTitle("Clean Architecture");
-        when(bookService.findAllByCategoriesId(eq(4L), any()))
-                .thenReturn(new PageImpl<>(java.util.List.of(book)));
+        Category matchingCategory = categoryRepository.save(createCategory("Architecture"));
+        Category otherCategory = categoryRepository.save(createCategory("Other"));
+        Book matchingBook = bookRepository.save(createBook(
+                "Clean Architecture",
+                "9780134494166",
+                matchingCategory
+        ));
+        bookRepository.save(createBook(
+                "Domain-Driven Design",
+                "9780321125217",
+                otherCategory
+        ));
 
-        mockMvc.perform(get("/categories/4/books").with(user(createUser(10L, RoleName.USER))))
+        mockMvc.perform(get("/categories/" + matchingCategory.getId() + "/books")
+                        .with(user(createUser(10L, RoleName.USER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(3))
+                .andExpect(jsonPath("$.content[0].id").value(matchingBook.getId()))
                 .andExpect(jsonPath("$.content[0].title").value("Clean Architecture"));
     }
 
     @Test
     void create_ShouldAllowAdminRole() throws Exception {
-        CategoryResponseDto created = createCategoryResponseDto(2L, "History");
-        when(categoryService.save(any())).thenReturn(created);
-
         mockMvc.perform(post("/categories")
                         .with(user(createUser(1L, RoleName.ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(validCategoryPayload()))
+                        .content(validCategoryPayload("History")))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.name").value("History"));
 
-        verify(categoryService).save(any());
+        Optional<Category> savedCategory = categoryRepository.findAll().stream()
+                .filter(category -> category.getName().equals("History"))
+                .findFirst();
+        assertTrue(savedCategory.isPresent());
+        assertEquals("History books", savedCategory.get().getDescription());
     }
 
     @Test
     void update_ShouldReturnBadRequestForInvalidPayload() throws Exception {
-        mockMvc.perform(put("/categories/3")
+        Category category = categoryRepository.save(createCategory("Old"));
+
+        mockMvc.perform(put("/categories/" + category.getId())
                         .with(user(createUser(1L, RoleName.ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -129,18 +125,18 @@ class CategoryControllerTest {
 
     @Test
     void update_ShouldAllowAdminRole() throws Exception {
-        CategoryResponseDto updated = createCategoryResponseDto(3L, "Updated history");
-        when(categoryService.update(eq(3L), any())).thenReturn(updated);
+        Category category = categoryRepository.save(createCategory("History"));
 
-        mockMvc.perform(put("/categories/3")
+        mockMvc.perform(put("/categories/" + category.getId())
                         .with(user(createUser(1L, RoleName.ADMIN)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(validCategoryPayload()))
+                        .content(validCategoryPayload("Updated history")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.id").value(category.getId()))
                 .andExpect(jsonPath("$.name").value("Updated history"));
 
-        verify(categoryService).update(eq(3L), any());
+        Category updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
+        assertEquals("Updated history", updatedCategory.getName());
     }
 
     @Test
@@ -151,18 +147,32 @@ class CategoryControllerTest {
 
     @Test
     void delete_ShouldAllowAdminRole() throws Exception {
-        mockMvc.perform(delete("/categories/3").with(user(createUser(1L, RoleName.ADMIN))))
+        Category category = categoryRepository.save(createCategory("Business"));
+
+        mockMvc.perform(delete("/categories/" + category.getId())
+                        .with(user(createUser(1L, RoleName.ADMIN))))
                 .andExpect(status().isNoContent());
 
-        verify(categoryService).deleteById(3L);
+        assertFalse(categoryRepository.findById(category.getId()).isPresent());
     }
 
-    private CategoryResponseDto createCategoryResponseDto(Long id, String name) {
-        CategoryResponseDto dto = new CategoryResponseDto();
-        dto.setId(id);
-        dto.setName(name);
-        dto.setDescription("Description");
-        return dto;
+    private Category createCategory(String name) {
+        Category category = new Category();
+        category.setName(name);
+        category.setDescription("Description");
+        return category;
+    }
+
+    private Book createBook(String title, String isbn, Category category) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor("Author");
+        book.setIsbn(isbn);
+        book.setPrice(new BigDecimal("29.99"));
+        book.setDescription("Description");
+        book.setCoverImage("cover.png");
+        book.setCategories(Set.of(category));
+        return book;
     }
 
     private User createUser(Long id, RoleName roleName) {
@@ -173,40 +183,18 @@ class CategoryControllerTest {
         user.setId(id);
         user.setEmail(roleName.name().toLowerCase() + "@test.com");
         user.setPassword("password");
-        user.setRoles(java.util.Set.of(role));
+        user.setRoles(Set.of(role));
         user.setFirstName("Test");
         user.setLastName("User");
         return user;
     }
 
-    private String validCategoryPayload() {
+    private String validCategoryPayload(String name) {
         return """
                 {
-                  "name": "History",
+                  "name": "%s",
                   "description": "History books"
                 }
-                """;
-    }
-
-    @TestConfiguration
-    @EnableMethodSecurity
-    static class TestSecurityConfig {
-        @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http
-                    .csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                    .build();
-        }
-    }
-
-    @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = {
-            DataSourceAutoConfiguration.class,
-            HibernateJpaAutoConfiguration.class,
-            LiquibaseAutoConfiguration.class
-    })
-    @Import({CategoryController.class, CustomGlobalExceptionHandler.class, TestSecurityConfig.class})
-    static class TestApplication {
+                """.formatted(name);
     }
 }

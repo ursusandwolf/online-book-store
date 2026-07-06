@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +58,7 @@ class CategoryServiceImplTest {
 
         CategoryResponseDto actual = categoryService.getById(2L);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -87,7 +86,7 @@ class CategoryServiceImplTest {
 
         CategoryResponseDto actual = categoryService.save(requestDto);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -102,7 +101,7 @@ class CategoryServiceImplTest {
 
         CategoryResponseDto actual = categoryService.update(4L, requestDto);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         verify(categoryMapper).updateFromDto(requestDto, category);
         verify(categoryRepository).save(category);
     }

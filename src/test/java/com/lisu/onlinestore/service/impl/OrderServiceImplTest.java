@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,7 +90,7 @@ class OrderServiceImplTest {
         verify(orderRepository).save(orderCaptor.capture());
         Order savedOrder = orderCaptor.getValue();
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         assertEquals(user, savedOrder.getUser());
         assertEquals(OrderStatus.PENDING, savedOrder.getStatus());
         assertEquals(new BigDecimal("35.50"), savedOrder.getTotal());

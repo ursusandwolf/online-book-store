@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -84,7 +83,7 @@ class ShoppingCartServiceImplTest {
 
         CartDto actual = shoppingCartService.getCart(1L);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -103,7 +102,7 @@ class ShoppingCartServiceImplTest {
 
         CartItemDto actual = shoppingCartService.addBook(1L, request);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         assertEquals(shoppingCart, mappedItem.getShoppingCart());
         assertEquals(book, mappedItem.getBook());
         verify(cartRepo).save(shoppingCart);
@@ -127,7 +126,7 @@ class ShoppingCartServiceImplTest {
 
         CartItemDto actual = shoppingCartService.addBook(1L, request);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         assertEquals(6, existingItem.getQuantity());
         verify(itemMapper, never()).toCartItem(request);
     }
@@ -151,7 +150,7 @@ class ShoppingCartServiceImplTest {
                 1L, 12L, new UpdateQuantityRequestDto(5)
         );
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         assertEquals(5, item.getQuantity());
     }
 

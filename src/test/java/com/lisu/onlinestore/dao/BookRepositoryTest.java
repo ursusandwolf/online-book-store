@@ -3,6 +3,7 @@ package com.lisu.onlinestore.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import com.lisu.onlinestore.support.MySqlIntegrationTest;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.Category;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,8 +21,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = BookRepositoryTest.TestApplication.class)
-class BookRepositoryTest {
+class BookRepositoryTest extends MySqlIntegrationTest {
     @Autowired
     private BookRepository bookRepository;
     @Autowired

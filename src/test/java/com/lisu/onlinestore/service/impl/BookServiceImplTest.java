@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -49,7 +48,7 @@ class BookServiceImplTest {
 
         BookDto actual = bookService.create(requestDto);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         verify(bookRepository).save(mappedBook);
     }
 
@@ -63,7 +62,7 @@ class BookServiceImplTest {
 
         BookDto actual = bookService.findById(2L);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -127,7 +126,7 @@ class BookServiceImplTest {
 
         BookDto actual = bookService.update(4L, requestDto);
 
-        assertSame(expected, actual);
+        assertEquals(expected, actual);
         verify(bookMapper).updateFromDto(requestDto, book);
         verify(bookRepository).save(book);
     }

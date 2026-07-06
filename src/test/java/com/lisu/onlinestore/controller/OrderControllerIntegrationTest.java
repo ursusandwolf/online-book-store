@@ -14,6 +14,7 @@ import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.model.order.Order;
 import com.lisu.onlinestore.model.order.OrderStatus;
+import com.lisu.onlinestore.support.MySqlIntegrationTest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -27,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @Transactional
-class OrderControllerIntegrationTest {
+class OrderControllerIntegrationTest extends MySqlIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
