@@ -155,10 +155,11 @@ class ShoppingCartServiceImplTest {
     }
 
     @Test
-    void removeItem_ShouldDeleteItemFromRepository() {
+    void removeItem_ShouldRemoveItemFromCart() {
         CartItem item = new CartItem();
         item.setId(15L);
         item.setShoppingCart(shoppingCart);
+        shoppingCart.addItem(item);
 
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
@@ -167,7 +168,8 @@ class ShoppingCartServiceImplTest {
 
         shoppingCartService.removeItem(1L, 15L);
 
-        verify(itemRepo).delete(item);
+        assertEquals(0, shoppingCart.getCartItems().size());
+        verify(cartRepo).save(shoppingCart);
     }
 
     @Test

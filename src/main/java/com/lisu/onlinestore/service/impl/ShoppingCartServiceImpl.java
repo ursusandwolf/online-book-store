@@ -78,7 +78,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public void removeItem(Long userId, Long cartItemId) {
-        itemRepo.delete(getItemByIdAndUserId(userId, cartItemId));
+        ShoppingCart cart = getCartByUserId(userId);
+        CartItem item = itemRepo.findByIdAndShoppingCartId(cartItemId, cart.getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cart item not found: " + cartItemId));
+        cart.removeItem(item);
+        cartRepo.save(cart);
     }
 
     private CartItem addCartItemToCart(CartItemRequestDto request,

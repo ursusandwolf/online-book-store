@@ -9,7 +9,6 @@ import com.lisu.onlinestore.model.RoleName;
 import com.lisu.onlinestore.model.User;
 import com.lisu.onlinestore.model.cart.CartItem;
 import com.lisu.onlinestore.model.cart.ShoppingCart;
-import com.lisu.onlinestore.support.MySqlIntegrationTest;
 import java.math.BigDecimal;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = ShoppingCartRepositoryTest.TestApplication.class)
-class ShoppingCartRepositoryTest extends MySqlIntegrationTest {
+class ShoppingCartRepositoryTest {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
     @Autowired

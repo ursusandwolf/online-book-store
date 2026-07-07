@@ -3,7 +3,6 @@ package com.lisu.onlinestore.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.lisu.onlinestore.support.MySqlIntegrationTest;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.Category;
 import java.math.BigDecimal;
@@ -23,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = BookRepositoryTest.TestApplication.class)
-class BookRepositoryTest extends MySqlIntegrationTest {
+class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
