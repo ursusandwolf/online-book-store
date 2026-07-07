@@ -1,10 +1,10 @@
-package com.lisu.onlinestore.support;
+package com.lisu.onlinestore.config;
 
 import org.testcontainers.containers.MySQLContainer;
 
 public class CustomMySqlContainer extends MySQLContainer<CustomMySqlContainer> {
     private static final String DB_IMAGE = "mysql:8";
-    private static CustomMySqlContainer mysqlContainer;
+    private static CustomMySqlContainer mySqlContainer;
 
     private CustomMySqlContainer() {
         super(DB_IMAGE);
@@ -14,18 +14,22 @@ public class CustomMySqlContainer extends MySQLContainer<CustomMySqlContainer> {
     }
 
     public static synchronized CustomMySqlContainer getInstance() {
-        if (mysqlContainer == null) {
-            mysqlContainer = new CustomMySqlContainer();
+        if (mySqlContainer == null) {
+            mySqlContainer = new CustomMySqlContainer();
         }
-        return mysqlContainer;
+        return mySqlContainer;
     }
 
     @Override
     public void start() {
         super.start();
+        System.setProperty("TEST_DB_URL", getJdbcUrl());
+        System.setProperty("TEST_DB_USERNAME", getUsername());
+        System.setProperty("TEST_DB_PASSWORD", getPassword());
     }
 
     @Override
     public void stop() {
+        // Keep container running for test suite
     }
 }
