@@ -4,23 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.lisu.onlinestore.Application;
 import com.lisu.onlinestore.model.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = CategoryRepositoryTest.TestApplication.class)
+@ContextConfiguration(classes = Application.class)
 class CategoryRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void findByName_ShouldReturnCategory() {
@@ -47,6 +47,12 @@ class CategoryRepositoryTest {
         categoryRepository.flush();
 
         assertFalse(categoryRepository.findById(category.getId()).isPresent());
+        Boolean isDeleted = jdbcTemplate.queryForObject(
+                "SELECT is_deleted FROM categories WHERE id = ?",
+                Boolean.class,
+                category.getId()
+        );
+        assertEquals(Boolean.TRUE, isDeleted);
     }
 
     private Category createCategory(String name) {
@@ -54,12 +60,5 @@ class CategoryRepositoryTest {
         category.setName(name);
         category.setDescription("Description");
         return category;
-    }
-
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    @EntityScan("com.lisu.onlinestore.model")
-    @EnableJpaRepositories("com.lisu.onlinestore.dao")
-    static class TestApplication {
     }
 }

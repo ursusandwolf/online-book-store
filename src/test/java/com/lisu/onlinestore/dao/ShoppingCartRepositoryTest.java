@@ -3,6 +3,7 @@ package com.lisu.onlinestore.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.lisu.onlinestore.Application;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.Role;
 import com.lisu.onlinestore.model.RoleName;
@@ -13,17 +14,13 @@ import java.math.BigDecimal;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = ShoppingCartRepositoryTest.TestApplication.class)
+@ContextConfiguration(classes = Application.class)
 class ShoppingCartRepositoryTest {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
@@ -102,12 +99,5 @@ class ShoppingCartRepositoryTest {
         book.setPrice(new BigDecimal("59.99"));
         book.setCategories(Set.of(category));
         return book;
-    }
-
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    @EntityScan("com.lisu.onlinestore.model")
-    @EnableJpaRepositories("com.lisu.onlinestore.dao")
-    static class TestApplication {
     }
 }

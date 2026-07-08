@@ -26,9 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Sql(scripts = {
-    "classpath:database/delete/delete-books-categories-table.sql",
-    "classpath:database/delete/delete-all-books.sql",
-    "classpath:database/delete/delete-all-categories.sql",
     "classpath:database/create/add-default-categories.sql",
     "classpath:database/create/add-default-books.sql",
     "classpath:database/create/add-into-books-categories-table.sql"

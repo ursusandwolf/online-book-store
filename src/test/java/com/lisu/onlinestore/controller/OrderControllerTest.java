@@ -3,6 +3,7 @@ package com.lisu.onlinestore.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,7 +85,10 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = "classpath:database/create/add-default-orders.sql")
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
     void updateOrderStatus_ShouldAllowAdminRole() throws Exception {
         mockMvc.perform(patch("/orders/101")
                         .with(user(createPrincipalUser(1L, RoleName.ADMIN)))
@@ -102,6 +106,10 @@ class OrderControllerTest {
     }
 
     @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
     void updateOrderStatus_ShouldRejectUserRole() throws Exception {
         mockMvc.perform(patch("/orders/101")
                         .with(user(createPrincipalUser(7L, RoleName.USER)))
@@ -112,6 +120,69 @@ class OrderControllerTest {
                                 }
                                 """))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
+    void getOrderItems_ShouldAllowUserRole() throws Exception {
+        mockMvc.perform(get("/orders/101/items")
+                        .with(user(createPrincipalUser(2L, RoleName.USER))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(1001))
+                .andExpect(jsonPath("$.content[0].bookId").value(1))
+                .andExpect(jsonPath("$.content[0].quantity").value(2));
+    }
+
+    @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
+    void getOrderItems_ShouldReturnNotFoundWhenOrderBelongsToAnotherUser() throws Exception {
+        mockMvc.perform(get("/orders/104/items")
+                        .with(user(createPrincipalUser(2L, RoleName.USER))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Order not found: 104"));
+    }
+
+    @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
+    void getOrderItems_ShouldRejectAdminRole() throws Exception {
+        mockMvc.perform(get("/orders/101/items")
+                        .with(user(createPrincipalUser(1L, RoleName.ADMIN))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
+    void getOrderItem_ShouldAllowUserRole() throws Exception {
+        mockMvc.perform(get("/orders/101/items/1002")
+                        .with(user(createPrincipalUser(2L, RoleName.USER))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1002))
+                .andExpect(jsonPath("$.bookId").value(2))
+                .andExpect(jsonPath("$.quantity").value(1));
+    }
+
+    @Test
+    @Sql(scripts = {
+        "classpath:database/create/add-default-orders.sql",
+        "classpath:database/create/add-default-order-items.sql"
+    })
+    void getOrderItem_ShouldReturnNotFoundWhenItemMissing() throws Exception {
+        mockMvc.perform(get("/orders/101/items/9999")
+                        .with(user(createPrincipalUser(2L, RoleName.USER))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Order item not found: 9999"));
     }
 
     private User createDbUser(Long id) {

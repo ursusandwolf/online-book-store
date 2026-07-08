@@ -3,30 +3,30 @@ package com.lisu.onlinestore.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import com.lisu.onlinestore.Application;
 import com.lisu.onlinestore.model.Book;
 import com.lisu.onlinestore.model.Category;
 import java.math.BigDecimal;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = BookRepositoryTest.TestApplication.class)
+@ContextConfiguration(classes = Application.class)
 class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void findAllByCategoriesId_ShouldReturnOnlyBooksFromRequestedCategory() {
@@ -63,6 +63,12 @@ class BookRepositoryTest {
         bookRepository.flush();
 
         assertFalse(bookRepository.findById(book.getId()).isPresent());
+        Boolean isDeleted = jdbcTemplate.queryForObject(
+                "SELECT is_deleted FROM books WHERE id = ?",
+                Boolean.class,
+                book.getId()
+        );
+        assertEquals(Boolean.TRUE, isDeleted);
     }
 
     private Category createCategory(String name) {
@@ -80,12 +86,5 @@ class BookRepositoryTest {
         book.setPrice(new BigDecimal("29.99"));
         book.setCategories(categories);
         return book;
-    }
-
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    @EntityScan("com.lisu.onlinestore.model")
-    @EnableJpaRepositories("com.lisu.onlinestore.dao")
-    static class TestApplication {
     }
 }
