@@ -27,10 +27,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {
     "classpath:database/delete/delete-all-orders.sql",
     "classpath:database/delete/delete-all-shopping-carts.sql",
@@ -42,7 +44,9 @@ import org.springframework.test.web.servlet.MockMvc;
     "classpath:database/create/add-default-categories.sql",
     "classpath:database/create/add-default-books.sql",
     "classpath:database/create/add-into-books-categories-table.sql",
-    "classpath:database/create/add-default-shopping-cart.sql"
+    "classpath:database/create/add-default-shopping-cart.sql",
+    "classpath:database/create/add-default-orders.sql",
+    "classpath:database/create/add-default-order-items.sql"
 })
 @Sql(scripts = {
     "classpath:database/delete/delete-all-orders.sql",
@@ -61,6 +65,7 @@ class OrderControllerTest {
     private ShoppingCartRepository shoppingCartRepository;
 
     @Test
+    @Sql(scripts = "classpath:database/delete/delete-all-orders.sql")
     void placeOrder_ShouldAllowUserRole() throws Exception {
         mockMvc.perform(post("/orders")
                         .with(user(createPrincipalUser(2L, RoleName.USER)))
@@ -85,10 +90,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void updateOrderStatus_ShouldAllowAdminRole() throws Exception {
         mockMvc.perform(patch("/orders/101")
                         .with(user(createPrincipalUser(1L, RoleName.ADMIN)))
@@ -106,10 +107,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void updateOrderStatus_ShouldRejectUserRole() throws Exception {
         mockMvc.perform(patch("/orders/101")
                         .with(user(createPrincipalUser(7L, RoleName.USER)))
@@ -123,10 +120,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void getOrderItems_ShouldAllowUserRole() throws Exception {
         mockMvc.perform(get("/orders/101/items")
                         .with(user(createPrincipalUser(2L, RoleName.USER))))
@@ -137,10 +130,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void getOrderItems_ShouldReturnNotFoundWhenOrderBelongsToAnotherUser() throws Exception {
         mockMvc.perform(get("/orders/104/items")
                         .with(user(createPrincipalUser(2L, RoleName.USER))))
@@ -149,10 +138,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void getOrderItems_ShouldRejectAdminRole() throws Exception {
         mockMvc.perform(get("/orders/101/items")
                         .with(user(createPrincipalUser(1L, RoleName.ADMIN))))
@@ -160,10 +145,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void getOrderItem_ShouldAllowUserRole() throws Exception {
         mockMvc.perform(get("/orders/101/items/1002")
                         .with(user(createPrincipalUser(2L, RoleName.USER))))
@@ -174,10 +155,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-        "classpath:database/create/add-default-orders.sql",
-        "classpath:database/create/add-default-order-items.sql"
-    })
     void getOrderItem_ShouldReturnNotFoundWhenItemMissing() throws Exception {
         mockMvc.perform(get("/orders/101/items/9999")
                         .with(user(createPrincipalUser(2L, RoleName.USER))))
