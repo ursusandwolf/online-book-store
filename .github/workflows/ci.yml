@@ -17,4 +17,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots -e verify
+      - name: Print Surefire Reports
+        if: failure()
+        run: |
+          find target/surefire-reports -maxdepth 1 -type f \( -name "*.txt" -o -name "*.dump*" -o -name "*.xml" \) -print
+          for file in target/surefire-reports/*.txt; do
+            if [ -f "$file" ]; then
+              echo "----- $file -----"
+              cat "$file"
+            fi
+          done
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          if-no-files-found: ignore
