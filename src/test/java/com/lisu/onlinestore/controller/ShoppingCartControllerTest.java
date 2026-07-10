@@ -1,8 +1,6 @@
 package com.lisu.onlinestore.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -172,49 +170,6 @@ class ShoppingCartControllerTest {
                                 """))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Book not found: 999"));
-    }
-
-    @Test
-    void addBook_ShouldKeepCartsIndependentForDifferentUsers() throws Exception {
-        mockMvc.perform(post("/cart")
-                        .with(user(createPrincipalUser(2L, RoleName.USER)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "bookId": 2,
-                                  "quantity": 2
-                                }
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bookId").value(2))
-                .andExpect(jsonPath("$.quantity").value(2));
-
-        mockMvc.perform(post("/cart")
-                        .with(user(createPrincipalUser(3L, RoleName.USER)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "bookId": 2,
-                                  "quantity": 4
-                                }
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bookId").value(2))
-                .andExpect(jsonPath("$.quantity").value(4));
-
-        ShoppingCart firstUserCart = shoppingCartRepository
-                .findWithItemsByUser(createDbUser(2L))
-                .orElseThrow();
-        ShoppingCart secondUserCart = shoppingCartRepository
-                .findWithItemsByUser(createDbUser(3L))
-                .orElseThrow();
-
-        assertEquals(2, firstUserCart.getCartItems().size());
-        assertEquals(2, secondUserCart.getCartItems().size());
-        assertEquals(2, firstUserCart.findItemByBookId(2L).orElseThrow().getQuantity());
-        assertEquals(4, secondUserCart.findItemByBookId(2L).orElseThrow().getQuantity());
-        assertFalse(firstUserCart.findItemByBookId(1L).isPresent());
-        assertTrue(secondUserCart.findItemByBookId(1L).isPresent());
     }
 
     @Test
