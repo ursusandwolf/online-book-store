@@ -1,7 +1,6 @@
 package com.lisu.onlinestore.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -127,6 +126,20 @@ class ShoppingCartControllerTest {
     }
 
     @Test
+    void updateQuantity_ShouldReturnNotFoundForForeignCartItem() throws Exception {
+        mockMvc.perform(put("/cart/items/2")
+                        .with(user(createPrincipalUser(2L, RoleName.USER)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "quantity": 5
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Cart item not found: 2"));
+    }
+
+    @Test
     void removeItem_ShouldAllowUserRole() throws Exception {
         mockMvc.perform(delete("/cart/items/2").with(user(createPrincipalUser(3L, RoleName.USER))))
                 .andExpect(status().isNoContent());
@@ -136,6 +149,28 @@ class ShoppingCartControllerTest {
                 .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.userId").value(3))
                 .andExpect(jsonPath("$.cartItems.length()").value(0));
+    }
+
+    @Test
+    void removeItem_ShouldReturnNotFoundForForeignCartItem() throws Exception {
+        mockMvc.perform(delete("/cart/items/1").with(user(createPrincipalUser(3L, RoleName.USER))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Cart item not found: 1"));
+    }
+
+    @Test
+    void addBook_ShouldReturnNotFoundWhenBookMissing() throws Exception {
+        mockMvc.perform(post("/cart")
+                        .with(user(createPrincipalUser(4L, RoleName.USER)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "bookId": 999,
+                                  "quantity": 1
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Book not found: 999"));
     }
 
     @Test
