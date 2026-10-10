@@ -65,6 +65,7 @@ databaseChangeLog:
   - changeSet:
       id: insert-roles
       author: alex
+      validCheckSum: '9:0e7e18f5460aa4036e5e18bb5191786b'
       preConditions:
         - onFail: MARK_RAN
           sqlCheck:
@@ -75,6 +76,9 @@ databaseChangeLog:
             tableName: roles
             columns:
               - column: { name: name, value: 'USER' }
+        - insert:
+            tableName: roles
+            columns:
               - column: { name: name, value: 'ADMIN' }
 
   - changeSet:

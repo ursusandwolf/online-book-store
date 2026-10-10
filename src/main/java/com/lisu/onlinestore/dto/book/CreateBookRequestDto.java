@@ -1,10 +1,12 @@
 package com.lisu.onlinestore.dto.book;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +33,7 @@ public class CreateBookRequestDto {
 
     @NotNull
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal price;
 
     private String description;
@@ -38,5 +41,5 @@ public class CreateBookRequestDto {
     private String coverImage;
 
     @NotEmpty(message = "Must assign at least one category")
-    private Set<Long> categoryIds = new HashSet<>();
+    private Set<@NotNull @Positive Long> categoryIds = new HashSet<>();
 }

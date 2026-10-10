@@ -114,8 +114,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Page<OrderItemDto> toPage(List<OrderItemDto> orderItems, Pageable pageable) {
-        int start = Math.min((int) pageable.getOffset(), orderItems.size());
-        int end = Math.min(start + pageable.getPageSize(), orderItems.size());
+        if (pageable.isUnpaged()) {
+            return new PageImpl<>(orderItems);
+        }
+        int start = (int) Math.min(pageable.getOffset(), orderItems.size());
+        int end = (int) Math.min((long) start + pageable.getPageSize(), orderItems.size());
         return new PageImpl<>(orderItems.subList(start, end), pageable, orderItems.size());
     }
 
@@ -148,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private User getUserById(Long userId) {
-        return userRepository.findById(userId)
+        return userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
     }
 

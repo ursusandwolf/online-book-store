@@ -138,6 +138,18 @@ class AuthenticationControllerTest {
                 .andExpect(jsonPath("$.errors").isArray());
     }
 
+    @Test
+    void login_ShouldReturnUnauthorizedForInvalidCredentials() throws Exception {
+        when(authenticationService.authenticate(any())).thenThrow(
+                new org.springframework.security.authentication.BadCredentialsException(
+                        "Internal authentication details"));
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@test.com\",\"password\":\"password123\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("Invalid credentials"));
+    }
+
     private UserRegistrationRequestDto validRegistrationRequest() {
         UserRegistrationRequestDto requestDto = new UserRegistrationRequestDto();
         requestDto.setEmail("user@test.com");

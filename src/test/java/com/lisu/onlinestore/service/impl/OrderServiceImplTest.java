@@ -87,7 +87,7 @@ class OrderServiceImplTest {
         expected.setStatus(OrderStatus.PENDING);
         expected.setTotal(new BigDecimal("35.50"));
 
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findByIdForUpdate(user.getId())).thenReturn(Optional.of(user));
         when(shoppingCartRepository.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderMapper.toDto(any(Order.class))).thenReturn(expected);
@@ -121,7 +121,7 @@ class OrderServiceImplTest {
         ShoppingCart emptyCart = new ShoppingCart();
         emptyCart.setUser(user);
 
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findByIdForUpdate(user.getId())).thenReturn(Optional.of(user));
         when(shoppingCartRepository.findWithItemsByUser(user)).thenReturn(Optional.of(emptyCart));
 
         IllegalArgumentException exception = assertThrows(
@@ -136,7 +136,7 @@ class OrderServiceImplTest {
     void placeOrder_ShouldThrowWhenUserNotFound() {
         CreateOrderRequestDto request = new CreateOrderRequestDto("Kyiv, Shevchenko ave, 1");
 
-        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByIdForUpdate(user.getId())).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -150,7 +150,7 @@ class OrderServiceImplTest {
     void placeOrder_ShouldThrowWhenCartNotFound() {
         CreateOrderRequestDto request = new CreateOrderRequestDto("Kyiv, Shevchenko ave, 1");
 
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findByIdForUpdate(user.getId())).thenReturn(Optional.of(user));
         when(shoppingCartRepository.findWithItemsByUser(user)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
@@ -288,6 +288,36 @@ class OrderServiceImplTest {
         );
 
         assertEquals("Order not found: 404", exception.getMessage());
+    }
+
+    @Test
+    void getOrderItems_ShouldReturnEmptyPageForOffsetAboveIntegerRange() {
+        Order order = new Order();
+        order.addOrderItem(createOrderItemWithId(1L, createBook(1L, BigDecimal.ONE), 1));
+        when(orderRepository.findByIdAndUserId(10L, user.getId()))
+                .thenReturn(Optional.of(order));
+
+        Page<OrderItemDto> page = orderService.getOrderItems(user.getId(), 10L,
+                PageRequest.of(Integer.MAX_VALUE, 2));
+
+        assertTrue(page.isEmpty());
+        assertEquals(1, page.getTotalElements());
+    }
+
+    @Test
+    void getOrderItems_ShouldSupportUnpagedRequests() {
+        Order order = new Order();
+        OrderItem item = createOrderItemWithId(1L, createBook(1L, BigDecimal.ONE), 1);
+        order.addOrderItem(item);
+        OrderItemDto dto = new OrderItemDto(1L, 1L, 1);
+        when(orderRepository.findByIdAndUserId(10L, user.getId()))
+                .thenReturn(Optional.of(order));
+        when(orderItemMapper.toDto(item)).thenReturn(dto);
+
+        Page<OrderItemDto> page = orderService.getOrderItems(user.getId(), 10L,
+                Pageable.unpaged());
+
+        assertEquals(List.of(dto), page.getContent());
     }
 
     private Book createBook(Long id, BigDecimal price) {

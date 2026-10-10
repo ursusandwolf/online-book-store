@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: disable-legacy-admin
+      author: codex
+      changes:
+        - sql:
+            sql: |
+              UPDATE users
+              SET is_deleted = true
+              WHERE email = 'admin@example.com'
+                AND password = '$2a$10$2S7m0.WzO1rZ.8o9iN6UbeT5/YvVz6t9I6T/z6Kx6I1W8z6Kx6I1W'

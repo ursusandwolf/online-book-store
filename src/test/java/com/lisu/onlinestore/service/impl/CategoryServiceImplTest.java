@@ -108,6 +108,7 @@ class CategoryServiceImplTest {
 
     @Test
     void deleteById_ShouldDelegateToRepository() {
+        when(categoryRepository.existsById(6L)).thenReturn(true);
         categoryService.deleteById(6L);
 
         verify(categoryRepository).deleteById(6L);

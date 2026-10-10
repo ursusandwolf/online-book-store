@@ -42,7 +42,10 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token);
 
-            return !claimsJws.getPayload().getExpiration().before(new Date());
+            Claims claims = claimsJws.getPayload();
+            return claims.getExpiration() != null
+                    && !claims.getExpiration().before(new Date())
+                    && claims.getSubject() != null && !claims.getSubject().isBlank();
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }

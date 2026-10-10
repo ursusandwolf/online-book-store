@@ -43,7 +43,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional(readOnly = true)
     public CartDto getCart(Long userId) {
-        return cartMapper.toDto(getCartByUserId(userId));
+        return cartMapper.toDto(getCartByUser(getUserById(userId)));
     }
 
     @Override
@@ -54,7 +54,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         CartItem item = cart.findItemByBookId(book.getId())
                 .map(existingItem -> {
-                    existingItem.setQuantity(existingItem.getQuantity() + request.getQuantity());
+                    long quantity = (long) existingItem.getQuantity() + request.getQuantity();
+                    if (quantity > Integer.MAX_VALUE) {
+                        throw new IllegalArgumentException("Cart item quantity is too large");
+                    }
+                    existingItem.setQuantity((int) quantity);
                     return existingItem;
                 })
                 .orElseGet(() -> addCartItemToCart(request, book, cart));
@@ -101,7 +105,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private ShoppingCart getCartByUserId(Long userId) {
-        return getCartByUser(getUserById(userId));
+        User user = userRepo.findByIdForUpdate(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        return getCartByUser(user);
     }
 
     private CartItem getItemByIdAndUserId(Long userId, Long cartItemId) {

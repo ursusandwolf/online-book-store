@@ -7,12 +7,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.lisu.onlinestore.dao.BookRepository;
+import com.lisu.onlinestore.dao.CategoryRepository;
 import com.lisu.onlinestore.dto.book.BookDto;
 import com.lisu.onlinestore.dto.book.BookDtoWithoutCategoryIds;
 import com.lisu.onlinestore.dto.book.CreateBookRequestDto;
 import com.lisu.onlinestore.exception.EntityNotFoundException;
 import com.lisu.onlinestore.mapper.BookMapper;
 import com.lisu.onlinestore.model.Book;
+import com.lisu.onlinestore.model.Category;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,8 @@ class BookServiceImplTest {
     private BookRepository bookRepository;
     @Mock
     private BookMapper bookMapper;
+    @Mock
+    private CategoryRepository categoryRepository;
     @InjectMocks
     private BookServiceImpl bookService;
 
@@ -43,6 +47,7 @@ class BookServiceImplTest {
         BookDto expected = createBookDto(1L, "Clean Code");
 
         when(bookMapper.toEntity(requestDto)).thenReturn(mappedBook);
+        stubCategories();
         when(bookRepository.save(mappedBook)).thenReturn(mappedBook);
         when(bookMapper.toDto(mappedBook)).thenReturn(expected);
 
@@ -106,6 +111,7 @@ class BookServiceImplTest {
         Page<Book> books = new PageImpl<>(List.of(book), pageable, 1);
 
         when(bookRepository.findAllByCategoriesId(7L, pageable)).thenReturn(books);
+        when(categoryRepository.existsById(7L)).thenReturn(true);
         when(bookMapper.toDtoWithoutCategories(book)).thenReturn(expected);
 
         Page<BookDtoWithoutCategoryIds> actual = bookService.findAllByCategoriesId(7L, pageable);
@@ -121,6 +127,7 @@ class BookServiceImplTest {
         BookDto expected = createBookDto(4L, "Clean Code");
 
         when(bookRepository.findById(4L)).thenReturn(Optional.of(book));
+        stubCategories();
         when(bookRepository.save(book)).thenReturn(book);
         when(bookMapper.toDto(book)).thenReturn(expected);
 
@@ -133,9 +140,38 @@ class BookServiceImplTest {
 
     @Test
     void deleteById_ShouldDelegateToRepository() {
+        when(bookRepository.existsById(8L)).thenReturn(true);
         bookService.deleteById(8L);
 
         verify(bookRepository).deleteById(8L);
+    }
+
+    @Test
+    void create_ShouldRejectMissingCategory() {
+        CreateBookRequestDto request = createBookRequestDto();
+        request.setCategoryIds(Set.of(99L));
+        when(bookMapper.toEntity(request)).thenReturn(new Book());
+        when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> bookService.create(request));
+    }
+
+    @Test
+    void findAllByCategoriesId_ShouldRejectMissingCategory() {
+        assertThrows(EntityNotFoundException.class,
+                () -> bookService.findAllByCategoriesId(99L, PageRequest.of(0, 10)));
+    }
+
+    @Test
+    void deleteById_ShouldRejectMissingBook() {
+        assertThrows(EntityNotFoundException.class, () -> bookService.deleteById(99L));
+    }
+
+    private void stubCategories() {
+        for (long id : List.of(1L, 2L)) {
+            Category category = new Category();
+            category.setId(id);
+            when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+        }
     }
 
     private CreateBookRequestDto createBookRequestDto() {

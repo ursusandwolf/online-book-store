@@ -94,7 +94,7 @@ class ShoppingCartServiceImplTest {
         mappedItem.setQuantity(3);
         CartItemDto expected = new CartItemDto(10L, 2L, "Clean Code", 3);
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(bookRepo.findById(2L)).thenReturn(Optional.of(book));
         when(itemMapper.toCartItem(request)).thenReturn(mappedItem);
@@ -119,7 +119,7 @@ class ShoppingCartServiceImplTest {
         shoppingCart.addItem(existingItem);
         CartItemDto expected = new CartItemDto(11L, 2L, "Refactoring", 6);
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(bookRepo.findById(2L)).thenReturn(Optional.of(book));
         when(itemMapper.toDto(existingItem)).thenReturn(expected);
@@ -139,7 +139,7 @@ class ShoppingCartServiceImplTest {
         item.setQuantity(1);
         CartItemDto expected = new CartItemDto(12L, 2L, "Book", 5);
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(itemRepo.findByIdAndShoppingCartId(12L, shoppingCart.getId()))
                 .thenReturn(Optional.of(item));
@@ -161,7 +161,7 @@ class ShoppingCartServiceImplTest {
         item.setShoppingCart(shoppingCart);
         shoppingCart.addItem(item);
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(itemRepo.findByIdAndShoppingCartId(15L, shoppingCart.getId()))
                 .thenReturn(Optional.of(item));
@@ -186,7 +186,7 @@ class ShoppingCartServiceImplTest {
 
     @Test
     void addBook_ShouldThrowWhenBookDoesNotExist() {
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
         when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
         when(bookRepo.findById(77L)).thenReturn(Optional.empty());
 
@@ -196,6 +196,24 @@ class ShoppingCartServiceImplTest {
         );
 
         assertEquals("Book not found: 77", exception.getMessage());
+    }
+
+    @Test
+    void addBook_ShouldRejectQuantityOverflowWithoutChangingCart() {
+        Book book = createBook(2L, "Refactoring");
+        CartItem existing = new CartItem();
+        existing.setBook(book);
+        existing.setQuantity(Integer.MAX_VALUE);
+        shoppingCart.addItem(existing);
+        when(userRepo.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
+        when(cartRepo.findWithItemsByUser(user)).thenReturn(Optional.of(shoppingCart));
+        when(bookRepo.findById(2L)).thenReturn(Optional.of(book));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> shoppingCartService.addBook(1L, new CartItemRequestDto(2L, 1)));
+
+        assertEquals(Integer.MAX_VALUE, existing.getQuantity());
+        verify(cartRepo, never()).save(any());
     }
 
     private Book createBook(Long id, String title) {
